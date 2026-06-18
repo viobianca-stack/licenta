@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Detector Texte AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
+  --border:#22262f;--accent:#00e5ff;--ai:#ff4d6d;
+  --human:#00e5ff;--text:#e8eaf0;--muted:#5a5f70;--green:#00ffaa;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'DM Mono',monospace;min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:32px 40px 80px;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;
+}
+.wrap{position:relative;z-index:1;width:100%;max-width:1200px}
+header{margin-bottom:44px;text-align:center}
+h1{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,6vw,3.4rem);font-weight:800;line-height:1.05;letter-spacing:-.03em}
+h1 em{color:var(--accent);font-style:normal}
+.subtitle{margin-top:10px;font-size:12px;color:var(--muted);letter-spacing:.08em}
+
+.tabs{display:flex;gap:8px;margin-bottom:20px}
+.tab{
+  flex:1;padding:11px;background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;text-align:center;cursor:pointer;
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  transition:all .2s;
+}
+.tab.active{border-color:var(--accent);color:var(--accent);background:rgba(0,229,255,.05)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 32px;margin-bottom:20px}
+.card-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+textarea{
+  width:100%;min-height:150px;background:var(--bg);border:1px solid var(--border);
+  border-radius:6px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;
+  line-height:1.75;padding:14px 16px;resize:vertical;outline:none;transition:border-color .2s;
+}
+textarea:focus{border-color:var(--accent)}
+.char-count{text-align:right;font-size:11px;color:var(--muted);margin-top:6px}
+
+.toggles{display:grid;grid-template-columns:repeat(3,auto);gap:10px;margin-top:18px;justify-content:start;flex-wrap:wrap}
+.toggle{
+  display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);
+  border-radius:6px;padding:8px 14px;cursor:pointer;user-select:none;
+  font-size:11px;letter-spacing:.06em;color:var(--muted);transition:border-color .2s,color .2s;
+}
+.toggle.active{border-color:var(--accent);color:var(--accent)}
+.toggle-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:background .2s}
+.toggle.active .toggle-dot{background:var(--accent)}
+
+.btn-primary{
+  width:100%;margin-top:18px;padding:15px;background:transparent;
+  border:1px solid var(--accent);border-radius:6px;color:var(--accent);
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;cursor:pointer;
+  transition:background .2s,color .15s,transform .1s;
+}
+.btn-primary:hover:not(:disabled){background:var(--accent);color:var(--bg)}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed}
+
+.err{
+  background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.25);
+  border-radius:6px;padding:12px 16px;font-size:12px;color:var(--ai);
+  display:none;margin-top:14px;
+}
+
+#result{display:none;animation:fadeUp .4s ease both}
+#result-inner{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+#result-left{display:flex;flex-direction:column;gap:0}
+#result-right{display:flex;flex-direction:column;gap:0}
+@media(max-width:900px){#result-inner{grid-template-columns:1fr}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.verdict{display:flex;align-items:center;gap:16px;margin-bottom:26px}
+.v-icon{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.v-icon.ai  {background:rgba(255,77,109,.12);border:1px solid var(--ai)}
+.v-icon.hum {background:rgba(0,229,255,.10); border:1px solid var(--human)}
+.v-label{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em}
+.v-label.ai {color:var(--ai)}
+.v-label.hum{color:var(--human)}
+.v-sub{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.04em}
+
+.highlight-area{line-height:2;font-size:14px;background:var(--bg);padding:18px;border-radius:8px;border:1px solid var(--border);margin:20px 0;color:var(--text)}
+.hl-ai {background:rgba(255,77,109,.25);border-bottom:2px solid var(--ai);color:#ff8fa3;padding:2px 4px}
+.hl-hum{background:rgba(0,229,255,.15);border-bottom:2px solid var(--human);color:#80f1ff;padding:2px 4px}
+
+/* ANALIZA PER PROPOZIȚIE */
+.sent-area{margin:20px 0}
+.sent-legend{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;font-size:10px;color:var(--muted);letter-spacing:.08em}
+.sent-legend span{display:flex;align-items:center;gap:6px}
+.sent-legend .dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.sent-list{display:flex;flex-direction:column;gap:8px}
+.sent-item{
+  display:flex;align-items:flex-start;gap:12px;padding:10px 14px;
+  border-radius:6px;border-left:3px solid var(--border);font-size:12px;line-height:1.6;
+  background:var(--bg);transition:transform .15s;
+}
+.sent-item:hover{transform:translateX(3px)}
+.sent-item.strong_ai  {border-left-color:var(--ai);background:rgba(255,77,109,.06)}
+.sent-item.weak_ai    {border-left-color:rgba(255,77,109,.5);background:rgba(255,77,109,.03)}
+.sent-item.strong_human{border-left-color:var(--human);background:rgba(0,229,255,.06)}
+.sent-item.weak_human {border-left-color:rgba(0,229,255,.4);background:rgba(0,229,255,.02)}
+.sent-item.neutral    {border-left-color:var(--muted)}
+.sent-badge{
+  font-family:'Syne',sans-serif;font-size:9px;font-weight:700;
+  padding:3px 7px;border-radius:3px;white-space:nowrap;flex-shrink:0;margin-top:2px;
+}
+.sent-badge.strong_ai  {background:rgba(255,77,109,.2);color:var(--ai)}
+.sent-badge.weak_ai    {background:rgba(255,77,109,.1);color:rgba(255,77,109,.8)}
+.sent-badge.strong_human{background:rgba(0,229,255,.15);color:var(--human)}
+.sent-badge.weak_human {background:rgba(0,229,255,.08);color:rgba(0,229,255,.7)}
+.sent-badge.neutral    {background:rgba(90,95,112,.15);color:var(--muted)}
+.sent-score{font-size:10px;color:var(--muted);white-space:nowrap;flex-shrink:0;margin-top:4px}
+.sent-text{flex:1}
+
+.bars{display:flex;flex-direction:column;gap:13px}
+.bar-row{display:flex;flex-direction:column;gap:5px}
+.bar-meta{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.bar-track{height:5px;background:var(--border);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;width:0;transition:width .85s cubic-bezier(.22,1,.36,1)}
+.bar-fill.ai {background:var(--ai)}
+.bar-fill.hum{background:var(--human)}
+.conf{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);margin-top:22px}
+.conf-val{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:var(--text)}
+
+#chartWrap{margin-top:26px;display:none}
+#chartWrap canvas{max-height:200px}
+
+#limeWrap{display:none;margin-top:20px}
+.lime-title{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.lime-grid{display:flex;flex-direction:column;gap:6px}
+.lime-row{display:flex;align-items:center;gap:10px}
+.lime-word{font-size:12px;min-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lime-bar-wrap{flex:1;height:4px;background:var(--border);border-radius:99px;overflow:hidden}
+.lime-bar{height:100%;border-radius:99px;transition:width .7s ease}
+.lime-bar.ai {background:var(--ai)}
+.lime-bar.hum{background:var(--human)}
+.lime-val{font-size:10px;color:var(--muted);min-width:40px;text-align:right}
+
+#compareWrap{display:none;margin-top:20px}
+.cmp-title{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.cmp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.cmp-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center;cursor:pointer;transition:all .2s}
+.cmp-card:hover{border-color:var(--accent);background:var(--surface2)}
+.cmp-card.active-view{border-color:var(--green);box-shadow:0 0 10px rgba(0,255,170,.2)}
+.cmp-name{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.cmp-pred{font-family:'Syne',sans-serif;font-size:15px;font-weight:700}
+.cmp-pred.AI  {color:var(--ai)}
+.cmp-pred.UMAN{color:var(--human)}
+.cmp-prob{font-size:11px;color:var(--muted);margin-top:4px}
+
+#historySection{display:none}
+.hist-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.hist-clear{font-size:10px;color:var(--muted);cursor:pointer;background:none;border:none;text-transform:uppercase}
+.hist-list{display:flex;flex-direction:column;gap:8px}
+.hist-item{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px 16px;cursor:pointer;transition:transform .2s,border-color .2s}
+.hist-item:hover{border-color:var(--accent);transform:translateX(5px)}
+.hist-badge{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;padding:3px 9px;border-radius:3px}
+.hist-badge.AI  {background:rgba(255,77,109,.15);color:var(--ai)}
+.hist-badge.UMAN{background:rgba(0,229,255,.10);color:var(--human)}
+.hist-text{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+
+.drop-zone{
+  border:2px dashed var(--border);border-radius:10px;padding:40px 20px;
+  text-align:center;cursor:pointer;transition:border-color .2s,background .2s;
+  background:var(--bg);
+}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:rgba(0,229,255,.04)}
+.drop-zone input[type=file]{display:none}
+.drop-icon{font-size:32px;margin-bottom:12px}
+.drop-text{font-size:13px;color:var(--muted);line-height:1.7}
+.drop-text strong{color:var(--text)}
+.drop-hint{font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.05em}
+
+#batchProgress{display:none;margin-top:16px}
+.progress-bar-wrap{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:8px}
+.progress-bar-fill{height:100%;background:var(--accent);border-radius:99px;width:0;transition:width .3s}
+
+#batchResult{display:none;animation:fadeUp .4s ease both}
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.sum-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center}
+.sum-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px}
+.sum-val.ai  {color:var(--ai)}
+.sum-val.hum {color:var(--human)}
+.sum-val.neu {color:var(--accent)}
+.sum-lbl{font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+
+#batchChartWrap{margin-bottom:24px}
+#batchChartWrap canvas{max-height:180px}
+
+.batch-table{width:100%;border-collapse:collapse;font-size:11px}
+.batch-table th{text-align:left;padding:8px 10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--border)}
+.batch-table td{padding:8px 10px;border-bottom:1px solid rgba(34,38,47,.5);vertical-align:top}
+.batch-table tr:hover td{background:var(--surface2)}
+.b-badge{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px}
+.b-badge.AI  {background:rgba(255,77,109,.15);color:var(--ai)}
+.b-badge.UMAN{background:rgba(0,229,255,.10);color:var(--human)}
+.b-badge.SKIP{background:rgba(90,95,112,.15);color:var(--muted)}
+.export-btn{
+  margin-top:16px;padding:10px 20px;background:transparent;
+  border:1px solid var(--green);border-radius:6px;color:var(--green);
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;
+}
+.export-btn:hover{background:var(--green);color:var(--bg)}
+
+/* FRAZE TIPICE AI */
+.ai-phrases-wrap{margin:20px 0}
+.phrase-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.phrase-tag{
+  background:rgba(255,77,109,.12);border:1px solid rgba(255,77,109,.3);
+  border-radius:4px;padding:4px 10px;font-size:11px;color:#ff8fa3;
+  display:flex;align-items:center;gap:6px;
+}
+.phrase-tag .phrase-count{
+  background:rgba(255,77,109,.3);border-radius:2px;
+  padding:1px 5px;font-size:9px;font-weight:700;color:var(--ai);
+}
+.phrase-none{font-size:11px;color:var(--green);letter-spacing:.05em}
+.hl-phrase{background:rgba(255,77,109,.3);border-bottom:2px solid var(--ai);
+  color:#ff8fa3;padding:2px 4px;border-radius:2px;cursor:help;
+  text-decoration:underline dotted rgba(255,77,109,.6);}
+
+/* STATISTICI VOCABULAR */
+.vocab-wrap{margin:20px 0}
+.vocab-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:10px}
+.vocab-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+.vocab-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px}
+.vocab-lbl{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;line-height:1.4}
+.vocab-bar-wrap{margin-top:12px}
+.vocab-bar-label{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:4px}
+.vocab-bar-track{height:3px;background:var(--border);border-radius:99px;overflow:hidden}
+.vocab-bar-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .8s ease}
+.vocab-risk{margin-top:12px;padding:10px 14px;border-radius:6px;font-size:11px;line-height:1.5}
+.vocab-risk.low {background:rgba(0,255,170,.06);border:1px solid rgba(0,255,170,.2);color:var(--green)}
+.vocab-risk.med {background:rgba(255,229,0,.06);border:1px solid rgba(255,229,0,.2);color:#ffe500}
+.vocab-risk.high{background:rgba(255,77,109,.06);border:1px solid rgba(255,77,109,.2);color:var(--ai)}
+
+/* SCOR AGREGAT DE RISC */
+.risk-score-wrap{
+  display:flex;align-items:center;gap:20px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:18px 24px;margin-bottom:24px;
+}
+.risk-gauge{position:relative;width:80px;height:80px;flex-shrink:0}
+.risk-gauge svg{transform:rotate(-90deg)}
+.risk-gauge-val{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:18px;
+}
+.risk-gauge-lbl{font-size:8px;color:var(--muted);letter-spacing:.1em;margin-top:-2px}
+.risk-info{flex:1}
+.risk-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px}
+.risk-title.low {color:var(--green)}
+.risk-title.med {color:#ffe500}
+.risk-title.high{color:var(--ai)}
+.risk-desc{font-size:11px;color:var(--muted);line-height:1.6}
+.risk-breakdown{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.risk-pill{font-size:9px;padding:3px 8px;border-radius:99px;letter-spacing:.06em}
+.risk-pill.model{background:rgba(255,77,109,.15);color:var(--ai);border:1px solid rgba(255,77,109,.3)}
+.risk-pill.phrases{background:rgba(255,180,0,.15);color:#ffb400;border:1px solid rgba(255,180,0,.3)}
+.risk-pill.vocab{background:rgba(90,95,112,.2);color:var(--muted);border:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Detector Texte <em>AI</em></h1>
+  </header>
+<div class="tabs">
+    <div class="tab active" id="tab-single" onclick="switchTab('single')">Analiză Text</div>
+    <div class="tab" id="tab-batch" onclick="switchTab('batch')">Batch CSV</div>
+  </div>
+<div class="tab-pane active" id="pane-single">
+    <div class="card">
+      <div class="card-label">Text de analizat</div>
+      <textarea id="inputText" placeholder="Lipește aici textul..."></textarea>
+      <div class="char-count"><span id="charCount">0</span> caractere</div>
+      <div class="toggles">
+        <div class="toggle active" id="togLime"    onclick="toggleOpt('lime')">   <div class="toggle-dot"></div>Evidențiere cuvinte</div>
+        <div class="toggle active" id="togCompare" onclick="toggleOpt('compare')"><div class="toggle-dot"></div>Comparație modele</div>
+        <div class="toggle active" id="togChart"   onclick="toggleOpt('chart')">  <div class="toggle-dot"></div>Grafic cerc</div>
+        <div class="toggle active" id="togSent"    onclick="toggleOpt('sent')">   <div class="toggle-dot"></div>Analiză propoziții</div>
+        <div class="toggle active" id="togPhrases" onclick="toggleOpt('phrases')"><div class="toggle-dot"></div>Fraze AI tipice</div>
+        <div class="toggle active" id="togVocab"   onclick="toggleOpt('vocab')">  <div class="toggle-dot"></div>Statistici vocabular</div>
+      </div>
+      <button class="btn-primary" id="analyzeBtn" onclick="analyze()">Analizează textul</button>
+      <div class="err" id="errBox"></div>
+    </div>
+
+    <div class="card" id="result">
+      <div class="card-label" id="analysisLabel">Rezultat analiză</div>
+      <div class="verdict">
+        <div class="v-icon" id="vIcon"></div>
+        <div>
+          <div class="v-label" id="vLabel"></div>
+          <div class="v-sub"   id="vSub"></div>
+        </div>
+      </div>
+
+      <!-- SCOR AGREGAT DE RISC -->
+      <div id="riskWrap" style="display:none">
+        <div class="risk-score-wrap">
+          <div class="risk-gauge">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="var(--border)" stroke-width="8"/>
+              <circle id="riskArc" cx="40" cy="40" r="34" fill="none" stroke="#00e5ff"
+                stroke-width="8" stroke-linecap="round"
+                stroke-dasharray="213.6" stroke-dashoffset="213.6"
+                style="transition:stroke-dashoffset 1s ease,stroke .5s ease"/>
+            </svg>
+            <div class="risk-gauge-val">
+              <span id="riskScoreVal">—</span>
+              <span class="risk-gauge-lbl">/ 100</span>
+            </div>
+          </div>
+          <div class="risk-info">
+            <div class="risk-title" id="riskTitle">—</div>
+            <div class="risk-desc" id="riskDesc">—</div>
+            <div class="risk-breakdown" id="riskBreakdown"></div>
+          </div>
+        </div>
+      </div>
+
+<div id="sentWrapper" style="display:none; margin-bottom:25px">
+        <div class="card-label">Analiză per propoziție</div>
+        <div class="sent-area">
+          <div class="sent-legend">
+            <span><div class="dot" style="background:var(--ai)"></div>AI puternic (&gt;75%)</span>
+            <span><div class="dot" style="background:rgba(255,77,109,.5)"></div>AI slab (55-75%)</span>
+            <span><div class="dot" style="background:var(--muted)"></div>Incert (45-55%)</span>
+            <span><div class="dot" style="background:rgba(0,229,255,.4)"></div>Uman slab (25-45%)</span>
+            <span><div class="dot" style="background:var(--human)"></div>Uman puternic (&lt;25%)</span>
+          </div>
+          <div class="sent-list" id="sentList"></div>
+        </div>
+      </div>
+<div id="highlightWrapper" style="display:none; margin-bottom:25px">
+        <div class="card-label" id="hlLabel">Evidențiere semantică</div>
+        <div id="textHighlight" class="highlight-area"></div>
+      </div>
+<div id="factWrapper" style="display:none; margin-top:20px; margin-bottom:25px">
+        <div class="card-label">Entități detectate</div>
+        <div id="factBox" style="background:rgba(0,255,170,.05);border:1px solid rgba(0,255,170,.2);padding:15px;border-radius:8px">
+          <div id="entityList" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px"></div>
+          <div id="factVerdict" style="font-size:11px;color:var(--green);letter-spacing:.05em;line-height:1.4"></div>
+        </div>
+      </div>
+      <div id="result-inner">
+      <div id="result-left">
+
+      <!-- FRAZE TIPICE AI -->
+      <div id="phrasesWrapper" style="display:none; margin-bottom:25px">
+        <div class="card-label">Fraze tipice AI detectate</div>
+        <div class="ai-phrases-wrap">
+          <div class="phrase-list" id="phraseList"></div>
+          <div id="phraseNone" class="phrase-none" style="display:none">✓ Nicio frază tipică AI detectată.</div>
+        </div>
+        <div id="phraseHighlight" class="highlight-area" style="display:none;margin-top:12px"></div>
+      </div>
+
+      <!-- STATISTICI VOCABULAR -->
+      <div id="vocabWrapper" style="display:none; margin-bottom:25px">
+        <div class="card-label">Statistici vocabular</div>
+        <div class="vocab-grid" id="vocabGrid"></div>
+        <div class="vocab-bar-wrap" style="margin-top:12px">
+          <div class="vocab-bar-label">
+            <span>Cuvinte comune (top frecvente)</span>
+            <span id="vocabBarPct">—</span>
+          </div>
+          <div class="vocab-bar-track"><div class="vocab-bar-fill" id="vocabBar" style="width:0%"></div></div>
+        </div>
+        <div id="vocabRisk" class="vocab-risk" style="display:none"></div>
+      </div>
+
+      </div><!-- /result-left -->
+      <div id="result-right">
+
+      <div class="bars">
+        <div class="bar-row">
+          <div class="bar-meta"><span style="color:var(--ai)">Probabilitate AI</span><span id="pAiTxt">—</span></div>
+          <div class="bar-track"><div class="bar-fill ai"  id="barAi"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-meta"><span style="color:var(--human)">Probabilitate Om</span><span id="pHumTxt">—</span></div>
+          <div class="bar-track"><div class="bar-fill hum" id="barHum"></div></div>
+        </div>
+      </div>
+      <div class="conf"><span>Încredere (Predicție Model):</span><span class="conf-val" id="confVal">—</span></div>
+
+      <div id="chartWrap"><canvas id="probChart"></canvas></div>
+      <div id="limeWrap">
+        <div class="lime-title" id="limeTitle">Impact cuvinte (RoBERTa)</div>
+        <div class="lime-grid" id="limeGrid"></div>
+      </div>
+      <div id="compareWrap">
+        <div class="cmp-title">Comparație modele — click pentru detalii</div>
+        <div class="cmp-grid" id="cmpGrid"></div>
+      </div>
+
+      </div><!-- /result-right -->
+      </div><!-- /result-inner -->
+    </div>
+
+    <div class="card" id="historySection">
+      <div class="hist-header">
+        <span class="hist-title-txt">Istoric</span>
+        <button class="hist-clear" onclick="clearHistory()">Șterge</button>
+      </div>
+      <div class="hist-list" id="histList"></div>
+    </div>
+  </div>
+
+<div class="tab-pane" id="pane-batch">
+    <div class="card">
+      <div class="card-label">Analiză batch — CSV</div>
+      <div class="drop-zone" id="dropZone" onclick="document.getElementById('csvFile').click()"
+           ondragover="event.preventDefault();this.classList.add('dragover')"
+           ondragleave="this.classList.remove('dragover')"
+           ondrop="handleDrop(event)">
+        <input type="file" id="csvFile" accept=".csv" onchange="handleFileSelect(this.files[0])"/>
+        <div class="drop-icon">📄</div>
+        <div class="drop-text">
+          <strong>Trage fișierul CSV aici</strong> sau click pentru a selecta<br>
+          Coloana cu textul trebuie să se numească <strong>text</strong>, <strong>content</strong> sau <strong>post</strong>
+        </div>
+        <div class="drop-hint">Maxim 500 rânduri · Procesare secvențială cu RoBERTa</div>
+      </div>
+
+      <div id="batchProgress">
+        <div style="font-size:11px;color:var(--muted)" id="batchProgressText">Procesare...</div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="batchProgressBar"></div></div>
+      </div>
+    </div>
+
+    <div class="card" id="batchResult">
+      <div class="card-label">Rezultate batch</div>
+<div class="summary-grid">
+        <div class="sum-card">
+          <div class="sum-val neu" id="sumTotal">—</div>
+          <div class="sum-lbl">Total analizate</div>
+        </div>
+        <div class="sum-card">
+          <div class="sum-val ai"  id="sumAI">—</div>
+          <div class="sum-lbl">Texte AI</div>
+        </div>
+        <div class="sum-card">
+          <div class="sum-val hum" id="sumHuman">—</div>
+          <div class="sum-lbl">Texte umane</div>
+        </div>
+      </div>
+<div id="batchChartWrap">
+        <div class="card-label">Distribuție predicții</div>
+        <canvas id="batchChart"></canvas>
+      </div>
+<div class="card-label" style="margin-bottom:10px">Detalii per rând</div>
+      <div style="overflow-x:auto">
+        <table class="batch-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Text (preview)</th>
+              <th>Predicție</th>
+              <th>% AI</th>
+              <th>% Uman</th>
+            </tr>
+          </thead>
+          <tbody id="batchTableBody"></tbody>
+        </table>
+      </div>
+
+      <button class="export-btn" onclick="exportCSV()">⬇ Exportă rezultate CSV</button>
+    </div>
+  </div>
+</div>
+<script>
+const opts = { lime: true, compare: true, chart: true, sent: true, phrases: true, vocab: true };
+const historyArr = [];
+let chartInst = null;
+let batchChartInst = null;
+let currentData = null;
+let batchData = null;
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('pane-' + name).classList.add('active');
+}
+
+function toggleOpt(key) {
+  opts[key] = !opts[key];
+  const id = 'tog' + key.charAt(0).toUpperCase() + key.slice(1);
+  document.getElementById(id).classList.toggle('active', opts[key]);
+
+  if (!currentData) return;
+
+  if (key === 'lime') {
+    const show = opts.lime;
+    document.getElementById('highlightWrapper').style.display = show ? 'block' : 'none';
+    document.getElementById('limeWrap').style.display = show ? 'block' : 'none';
+  }
+  if (key === 'compare') {
+    document.getElementById('compareWrap').style.display = opts.compare ? 'block' : 'none';
+  }
+  if (key === 'chart') {
+    if (opts.chart) {
+      renderChart(currentData.prob_ai, 100 - currentData.prob_ai);
+    } else {
+      document.getElementById('chartWrap').style.display = 'none';
+    }
+  }
+  if (key === 'sent') {
+    if (opts.sent && currentData.sentence_analysis && currentData.sentence_analysis.length > 0) {
+      renderSentences(currentData.sentence_analysis);
+    } else {
+      document.getElementById('sentWrapper').style.display = 'none';
+    }
+  }
+  if (key === 'phrases') {
+    const text = document.getElementById('inputText').value;
+    if (opts.phrases) renderAIPhrases(text);
+    else document.getElementById('phrasesWrapper').style.display = 'none';
+  }
+  if (key === 'vocab') {
+    const text = document.getElementById('inputText').value;
+    if (opts.vocab) renderVocabStats(text);
+    else document.getElementById('vocabWrapper').style.display = 'none';
+  }
+}
+
+document.getElementById('inputText').addEventListener('input', function() {
+  document.getElementById('charCount').textContent = this.value.length;
+});
+
+async function analyze() {
+  const text = document.getElementById('inputText').value.trim();
+  const btn  = document.getElementById('analyzeBtn');
+  const errBox = document.getElementById('errBox');
+  if (text.length < 10) { showErr('Textul este prea scurt.'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = 'Procesare...';
+  errBox.style.display = 'none';
+
+  try {
+    const res = await fetch('http://localhost:5000/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, lime: opts.lime, compare: opts.compare })
+    });
+    currentData = await res.json();
+    if (currentData.error) throw new Error(currentData.error);
+    renderResult(currentData, text);
+    addHistory(text, currentData);
+  } catch (e) { showErr(e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Analizează textul'; }
+}
+
+function renderResult(data, text) {
+  document.getElementById('result').style.display = 'block';
+
+  const factWrap = document.getElementById('factWrapper');
+  const nerData = data.ner_analysis || {};
+  if (nerData.entities_found && nerData.entities_found.length > 0) {
+    factWrap.style.display = 'block';
+    document.getElementById('entityList').innerHTML = nerData.entities_found.map(ent =>
+      `<span style="background:rgba(0,229,255,.1);border:1px solid var(--accent);padding:4px 10px;border-radius:4px;font-size:10px;color:var(--text)">
+        ${ent.text} <small style="opacity:.6;font-size:8px">[${ent.label}]</small>
+       </span>`
+    ).join('');
+    document.getElementById('factVerdict').innerHTML = `✓ Detectate ${nerData.entity_count} entități factuale.`;
+  } else { factWrap.style.display = 'none'; }
+
+  if (opts.sent && data.sentence_analysis && data.sentence_analysis.length > 0) {
+    renderSentences(data.sentence_analysis, 'RoBERTa');
+  } else {
+    document.getElementById('sentWrapper').style.display = 'none';
+  }
+
+  renderRiskScore(data, text);
+  renderAIPhrases(text);
+  renderVocabStats(text);
+
+  if (opts.compare && data.compare) renderCompare(data.compare);
+  else document.getElementById('compareWrap').style.display = 'none';
+  switchView('rb');
+}
+
+function renderSentences(sentences, modelLabel) {
+  const wrapper = document.getElementById('sentWrapper');
+  const list    = document.getElementById('sentList');
+  const sentLabel = document.querySelector('#sentWrapper .card-label');
+  if (sentLabel) sentLabel.textContent = `Analiză per propoziție (${modelLabel || 'RoBERTa'})`;
+
+  if (!sentences || sentences.length === 0) {
+    wrapper.style.display = 'none';
+    return;
+  }
+
+  const labelMap = {
+    strong_ai:     'AI puternic',
+    weak_ai:       'AI slab',
+    strong_human:  'Uman puternic',
+    weak_human:    'Uman slab',
+    neutral:       'Incert'
+  };
+
+  list.innerHTML = sentences.map(s => `
+    <div class="sent-item ${s.level}">
+      <span class="sent-badge ${s.level}">${labelMap[s.level] || s.level}</span>
+      <span class="sent-text">${escapeHtml(s.text)}</span>
+      <span class="sent-score">${s.prob_ai !== null ? s.prob_ai + '% AI' : ''}</span>
+    </div>
+  `).join('');
+
+  wrapper.style.display = 'block';
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function switchView(modelId) {
+  if (!currentData) return;
+  document.querySelectorAll('.cmp-card').forEach(c => c.classList.remove('active-view'));
+  const card = document.getElementById('card-' + modelId);
+  if (card) card.classList.add('active-view');
+
+  let importance = [], probAi = 0, titlePrefix = '', hlLabelText = '';
+  const text = document.getElementById('inputText').value;
+
+  let sentenceData = [];
+  if (modelId === 'rb') {
+    importance   = currentData.word_importance || [];
+    probAi       = currentData.prob_ai;
+    titlePrefix  = 'ROBERTA';
+    hlLabelText  = 'Evidențiere semantică';
+    sentenceData = currentData.sentence_analysis || [];
+  } else {
+    const key  = modelId === 'nb' ? 'naive_bayes' : 'logistic_regression';
+    const mdat = currentData.compare[key];
+    importance   = mdat.importance || [];
+    probAi       = mdat.prob_ai;
+    titlePrefix  = modelId.toUpperCase();
+    hlLabelText  = `Impact vocabular (${titlePrefix})`;
+    sentenceData = mdat.sentence_analysis || [];
+  }
+
+  const isAI = probAi >= 50;
+  document.getElementById('vLabel').textContent  = isAI ? 'Generat de AI' : 'Scris de Om';
+  document.getElementById('vLabel').className    = `v-label ${isAI ? 'ai' : 'hum'}`;
+  document.getElementById('vIcon').textContent   = isAI ? '🤖' : '👤';
+  document.getElementById('vIcon').className     = `v-icon ${isAI ? 'ai' : 'hum'}`;
+  document.getElementById('vSub').textContent    = `Vizualizare logică bazată pe modelul ${titlePrefix}.`;
+  document.getElementById('analysisLabel').textContent = `Rezultat analiză (${titlePrefix})`;
+
+  const probHum = 100 - probAi;
+  document.getElementById('pAiTxt').textContent   = probAi + '%';
+  document.getElementById('pHumTxt').textContent  = probHum.toFixed(2) + '%';
+  document.getElementById('barAi').style.width    = probAi + '%';
+  document.getElementById('barHum').style.width   = probHum + '%';
+  document.getElementById('confVal').textContent  = Math.max(probAi, probHum).toFixed(2) + '%';
+  if (opts.chart) { renderChart(probAi, probHum); } else { document.getElementById('chartWrap').style.display='none'; }
+
+  document.getElementById('hlLabel').textContent    = hlLabelText;
+  document.getElementById('limeTitle').textContent  = `Impact cuvinte (${titlePrefix})`;
+
+  if (opts.lime) {
+    renderHighlighting(importance, text);
+    renderLimeGrid(importance);
+  } else {
+    document.getElementById('highlightWrapper').style.display = 'none';
+    document.getElementById('limeWrap').style.display = 'none';
+  }
+  if (!opts.chart) {
+    document.getElementById('chartWrap').style.display = 'none';
+  }
+  if (!opts.compare) {
+    document.getElementById('compareWrap').style.display = 'none';
+  }
+
+  if (opts.sent && sentenceData.length > 0) {
+    renderSentences(sentenceData, titlePrefix);
+  } else if (!opts.sent) {
+    document.getElementById('sentWrapper').style.display = 'none';
+  }
+}
+
+function renderHighlighting(importanceData, text) {
+  let hlText = text;
+  const sorted = [...importanceData].sort((a, b) => b.word.length - a.word.length);
+  sorted.forEach(item => {
+    const cls = item.direction === 'AI' ? 'hl-ai' : 'hl-hum';
+    const safe = item.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    try {
+      hlText = hlText.replace(new RegExp(`\\b${safe}\\b`, 'gi'),
+        `<span class="${cls}">${item.word}</span>`);
+    } catch(e) {}
+  });
+  document.getElementById('textHighlight').innerHTML = hlText;
+  document.getElementById('highlightWrapper').style.display = 'block';
+}
+
+function renderLimeGrid(words) {
+  const grid = document.getElementById('limeGrid');
+  const wrap = document.getElementById('limeWrap');
+  if (!words || words.length === 0) {
+    wrap.style.display = 'none';
+    return;
+  }
+  grid.innerHTML = words.map(w => {
+    const bw = Math.min(Math.abs(w.impact) * 100, 100);
+    return `<div class="lime-row">
+      <span class="lime-word">${w.word}</span>
+      <div class="lime-bar-wrap"><div class="lime-bar ${w.direction.toLowerCase()}" style="width:${bw}%"></div></div>
+      <span class="lime-val">${w.impact > 0 ? '+' : ''}${w.impact.toFixed(2)}</span>
+    </div>`;
+  }).join('');
+  wrap.style.display = opts.lime ? 'block' : 'none';
+}
+
+function renderCompare(cmp) {
+  if (!cmp) return;
+  const mods = [
+    { id: 'nb', n: 'Naive Bayes',     d: cmp.naive_bayes },
+    { id: 'lr', n: 'Log. Regression', d: cmp.logistic_regression },
+    { id: 'rb', n: 'RoBERTa',         d: cmp.roberta }
+  ];
+  document.getElementById('cmpGrid').innerHTML = mods.map(m => `
+    <div class="cmp-card" id="card-${m.id}" onclick="switchView('${m.id}')">
+      <div class="cmp-name">${m.n}</div>
+      <div class="cmp-pred ${m.d.pred}">${m.d.pred}</div>
+      <div class="cmp-prob">${m.d.prob_ai}% AI</div>
+    </div>`).join('');
+  document.getElementById('compareWrap').style.display = 'block';
+}
+
+function renderChart(ai, hum) {
+  if (chartInst) chartInst.destroy();
+  const ctx = document.getElementById('probChart').getContext('2d');
+  chartInst = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels: ['AI','Om'], datasets: [{ data: [ai, hum], backgroundColor: ['#ff4d6d','#00e5ff'], borderWidth: 0 }] },
+    options: { cutout: '75%', plugins: { legend: { display: false } }, animation: { duration: 500 } }
+  });
+  document.getElementById('chartWrap').style.display = 'block';
+}
+
+function addHistory(text, data) {
+  const ts = new Date().toLocaleTimeString();
+  historyArr.unshift({ text, data, ts });
+  if (historyArr.length > 10) historyArr.pop();
+  const list = document.getElementById('histList');
+  document.getElementById('historySection').style.display = 'block';
+  list.innerHTML = historyArr.map((h, i) => `
+    <div class="hist-item" onclick="viewHistoryItem(${i})">
+      <span class="hist-badge ${h.data.prediction}">${h.data.prediction}</span>
+      <span class="hist-text">${h.text.substring(0, 50)}...</span>
+      <span style="font-size:9px;color:var(--muted)">${h.ts}</span>
+    </div>`).join('');
+}
+function viewHistoryItem(i) {
+  const item = historyArr[i];
+  if (!item) return;
+  currentData = item.data;
+  document.getElementById('inputText').value = item.text;
+  document.getElementById('charCount').textContent = item.text.length;
+  renderResult(item.data, item.text);
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+}
+function clearHistory() {
+  historyArr.length = 0;
+  document.getElementById('histList').innerHTML = '';
+  document.getElementById('historySection').style.display = 'none';
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFileSelect(file);
+}
+
+async function handleFileSelect(file) {
+  if (!file || !file.name.endsWith('.csv')) {
+    alert('Selectează un fișier CSV valid.');
+    return;
+  }
+
+  const progress    = document.getElementById('batchProgress');
+  const progressBar = document.getElementById('batchProgressBar');
+  const progressTxt = document.getElementById('batchProgressText');
+
+  progress.style.display = 'block';
+  document.getElementById('batchResult').style.display = 'none';
+  progressBar.style.width = '10%';
+  progressTxt.textContent = `Procesare "${file.name}"...`;
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    progressBar.style.width = '40%';
+    const res = await fetch('http://localhost:5000/batch', {
+      method: 'POST',
+      body: formData
+    });
+    progressBar.style.width = '80%';
+    const data = await res.json();
+
+    if (data.error) throw new Error(data.error);
+
+    progressBar.style.width = '100%';
+    progressTxt.textContent = `✓ Finalizat — ${data.summary.valid} texte procesate.`;
+
+    batchData = data;
+    renderBatchResult(data);
+  } catch (e) {
+    progressTxt.textContent = '✗ Eroare: ' + e.message;
+    progressBar.style.background = 'var(--ai)';
+  }
+}
+
+function renderBatchResult(data) {
+  const s = data.summary;
+
+  document.getElementById('sumTotal').textContent  = s.valid;
+  document.getElementById('sumAI').textContent     = `${s.ai_count} (${s.ai_percent}%)`;
+  document.getElementById('sumHuman').textContent  = `${s.human_count} (${s.human_percent}%)`;
+
+  if (batchChartInst) batchChartInst.destroy();
+  const ctx = document.getElementById('batchChart').getContext('2d');
+  batchChartInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['AI', 'Uman'],
+      datasets: [{
+        data: [s.ai_count, s.human_count],
+        backgroundColor: ['rgba(255,77,109,.6)', 'rgba(0,229,255,.6)'],
+        borderColor: ['#ff4d6d', '#00e5ff'],
+        borderWidth: 1, borderRadius: 4
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#5a5f70' }, grid: { color: '#22262f' } },
+        y: { ticks: { color: '#5a5f70' }, grid: { color: '#22262f' } }
+      }
+    }
+  });
+
+  const tbody = document.getElementById('batchTableBody');
+  tbody.innerHTML = data.results.map(r => `
+    <tr>
+      <td style="color:var(--muted)">${r.index}</td>
+      <td style="max-width:300px;word-break:break-word">${escapeHtml(r.text_preview)}</td>
+      <td><span class="b-badge ${r.prediction}">${r.prediction}</span></td>
+      <td style="color:var(--ai)">${r.prob_ai !== null ? r.prob_ai + '%' : '—'}</td>
+      <td style="color:var(--human)">${r.prob_human !== null ? r.prob_human + '%' : '—'}</td>
+    </tr>`).join('');
+
+  document.getElementById('batchResult').style.display = 'block';
+  document.getElementById('batchResult').scrollIntoView({ behavior: 'smooth' });
+}
+
+function exportCSV() {
+  if (!batchData) return;
+  const rows = [['#', 'text_preview', 'prediction', 'prob_ai', 'prob_human']];
+  batchData.results.forEach(r => {
+    rows.push([r.index, `"${r.text_preview.replace(/"/g, '""')}"`,
+               r.prediction, r.prob_ai ?? '', r.prob_human ?? '']);
+  });
+  const csvContent = rows.map(r => r.join(',')).join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'rezultate_detectie_ai.csv';
+  link.click();
+}
+
+
+// ─── FRAZE TIPICE AI ─────────────────────────────────────
+const AI_PHRASES = [
+  // Fraze tipice AI în engleză
+  "it is worth noting","it is important to note","it is crucial to",
+  "in today's rapidly evolving","in today's digital landscape",
+  "in the ever-evolving","furthermore","moreover","in conclusion",
+  "in summary","to summarize","it is essential to","it should be noted",
+  "a comprehensive","a wide range of","a variety of","it goes without saying",
+  "needless to say","as previously mentioned","as stated above",
+  "delve into","leverage","utilize","facilitate","cutting-edge",
+  "state-of-the-art","seamlessly","robust","innovative","groundbreaking",
+  "as an ai","i'm an ai","as a language model","i don't have personal",
+  "i cannot provide","i apologize","certainly!","of course!","sure!",
+  "i hope this helps","feel free to ask","here are","here is a list",
+  // Fraze tipice AI în română
+  "în concluzie","în rezumat","este important de menționat",
+  "este esențial să","este crucial să","este demn de remarcat",
+  "în contextul actual","în peisajul digital","în era digitală",
+  "în lumea în continuă evoluție","în lumea modernă",
+  "pe de o parte","pe de altă parte","în același timp",
+  "prin urmare","în consecință","astfel","totodată","mai mult decât atât",
+  "după cum s-a menționat","după cum am precizat",
+  "o gamă largă de","o varietate de","un număr semnificativ",
+  "în mod semnificativ","în mod considerabil","în mod eficient",
+  "inovator","revoluționar","de ultimă generație","performant",
+  "ca model de limbaj","ca inteligență artificială","nu am informații personale",
+  "nu pot oferi","îmi cer scuze","cu siguranță","bineînțeles","desigur",
+  "sper că ajută","nu ezitați să întrebați","iată câteva","iată o listă",
+  "în primul rând","în al doilea rând","în al treilea rând",
+  "1.","2.","3.","4.","5."
+];
+
+function detectAIPhrases(text) {
+  const lower = text.toLowerCase();
+  const found = [];
+  AI_PHRASES.forEach(phrase => {
+    let idx = lower.indexOf(phrase.toLowerCase());
+    let count = 0;
+    while (idx !== -1) {
+      count++;
+      idx = lower.indexOf(phrase.toLowerCase(), idx + 1);
+    }
+    if (count > 0) found.push({ phrase, count });
+  });
+  found.sort((a, b) => b.count - a.count);
+  return found;
+}
+
+function computeRiskScore(data, text) {
+  // Component 1: RoBERTa score (0-60 points, weight 60%)
+  const roberta = data.prob_ai || 0;
+  const robertaScore = roberta * 0.60;
+
+  // Component 2: Fraze tipice AI (0-25 points)
+  const phrases = detectAIPhrases(text);
+  const phraseScore = Math.min(phrases.length * 5, 25);
+
+  // Component 3: Vocab stats (0-15 points)
+  const stats = computeVocabStats(text);
+  let vocabScore = 0;
+  if (stats) {
+    if (stats.commonPct > 70) vocabScore += 5;
+    if (stats.ttr < 45)       vocabScore += 5;
+    if (stats.avgSentLen > 20) vocabScore += 5;
+  }
+
+  const total = Math.round(robertaScore + phraseScore + vocabScore);
+  const score = Math.min(total, 100);
+
+  let level, title, desc, color;
+  if (score >= 70) {
+    level = 'high'; color = '#ff4d6d';
+    title = 'Risc ridicat — probabil generat de AI';
+    desc  = 'Modelul RoBERTa și indicatorii statistici sugerează cu încredere ridicată că textul a fost generat automat.';
+  } else if (score >= 40) {
+    level = 'med'; color = '#ffe500';
+    title = 'Risc mediu — posibil conținut mixt';
+    desc  = 'Unii indicatori sugerează generare AI, alții sunt consistenți cu textul uman. Verificare suplimentară recomandată.';
+  } else {
+    level = 'low'; color = '#00ffaa';
+    title = 'Risc scăzut — probabil scris de om';
+    desc  = 'Indicatorii statistici și modelul de clasificare sugerează că textul a fost scris de o persoană.';
+  }
+
+  return { score, level, title, desc, color,
+           robertaScore: Math.round(robertaScore),
+           phraseScore, vocabScore,
+           phraseCount: phrases.length };
+}
+
+function renderRiskScore(data, text) {
+  const wrap = document.getElementById('riskWrap');
+  const risk = computeRiskScore(data, text);
+
+  // Gauge arc: circumference = 2*pi*34 ≈ 213.6
+  const circ = 213.6;
+  const offset = circ - (risk.score / 100) * circ;
+  const arc = document.getElementById('riskArc');
+  arc.style.stroke = risk.color;
+  setTimeout(() => { arc.style.strokeDashoffset = offset; }, 50);
+
+  document.getElementById('riskScoreVal').textContent = risk.score;
+  document.getElementById('riskScoreVal').style.color = risk.color;
+
+  const titleEl = document.getElementById('riskTitle');
+  titleEl.textContent = risk.title;
+  titleEl.className = 'risk-title ' + risk.level;
+
+  document.getElementById('riskDesc').textContent = risk.desc;
+
+  document.getElementById('riskBreakdown').innerHTML =
+    `<span class="risk-pill model">RoBERTa: ${risk.robertaScore}/60</span>
+     <span class="risk-pill phrases">Fraze AI: ${risk.phraseScore}/25</span>
+     <span class="risk-pill vocab">Vocabular: ${risk.vocabScore}/15</span>`;
+
+  wrap.style.display = 'block';
+}
+
+
+function renderAIPhrases(text) {
+  const wrapper = document.getElementById('phrasesWrapper');
+  const list    = document.getElementById('phraseList');
+  const none    = document.getElementById('phraseNone');
+  const highlight = document.getElementById('phraseHighlight');
+
+  if (!opts.phrases) { wrapper.style.display = 'none'; return; }
+
+  const found = detectAIPhrases(text);
+
+  if (found.length === 0) {
+    list.innerHTML = '';
+    none.style.display = 'block';
+    highlight.style.display = 'none';
+  } else {
+    none.style.display = 'none';
+    list.innerHTML = found.map(f =>
+      `<div class="phrase-tag">
+        "${escapeHtml(f.phrase)}"
+        ${f.count > 1 ? `<span class="phrase-count">×${f.count}</span>` : ''}
+       </div>`
+    ).join('');
+
+    let hlText = escapeHtml(text);
+    found.forEach(f => {
+      const safe = f.phrase.replace(/[.*+?^${}()|\[\]\\]/g, '\\$&');
+      try {
+        hlText = hlText.replace(
+          new RegExp(safe, 'gi'),
+          `<span class="hl-phrase" title="Frază tipică AI">$&</span>`
+        );
+      } catch(e) {}
+    });
+    highlight.innerHTML = hlText;
+    highlight.style.display = 'block';
+  }
+
+  wrapper.style.display = 'block';
+}
+
+// ─── STATISTICI VOCABULAR ─────────────────────────────────
+const COMMON_1000 = new Set([
+  "un","o","și","în","la","de","că","cu","nu","se","este","a","pe","din",
+  "să","care","mai","sau","prin","după","pentru","acest","această","astfel",
+  "dar","tot","când","despre","între","până","dacă","cum","foarte","aceste",
+  "cele","cel","cea","lui","ei","lor","le","li","am","ai","au","era","fi",
+  "fost","are","avem","aveți","au","face","fac","face","poate","putea",
+  "trebuie","poate","trebuie","acest","acesta","aceasta","acestea","acestui",
+  "acestei","acelor","alte","altă","alți","alte","atât","atâta","atunci",
+  "acolo","acum","aici","deja","doar","încă","chiar","bine","mare","mic",
+  "nou","vechi","mult","puțin","toți","toate","toate","orice","oricare",
+  "fiecare","nimeni","nimic","cineva","ceva","unde","când","cum","cât",
+  "câte","câți","câtă","prima","primul","ultimul","ultima","înainte",
+  "după","deasupra","dedesubt","lângă","între","peste","sub","spre","față",
+  "parte","loc","timp","an","zi","lună","oră","minut","secundă","zi",
+  "om","oameni","persoană","persoane","copil","copii","femeie","femei",
+  "bărbat","bărbați","țară","oraș","sat","casă","școală","muncă","viață",
+  "lucru","lucruri","minte","inimă","corp","mână","ochi","față","cap",
+  "zi","noapte","dimineață","seară","vară","iarnă","primăvară","toamnă",
+  "apă","foc","pământ","cer","soare","lună","stea","vânt","ploaie","zăpadă",
+  "alb","negru","roșu","verde","albastru","galben","gri","mare","mic",
+  "bun","rău","frumos","urât","rapid","lent","greu","ușor","scurt","lung",
+  "important","necesar","posibil","imposibil","adevărat","fals","real",
+  "face","merge","veni","pleca","ști","vedea","auzi","simți","gândi",
+  "spune","zice","crede","vrea","putea","trebui","fi","avea","lua","da",
+  "pune","ține","lăsa","ajuta","găsi","căuta","folosi","crea","schimba",
+  "începe","termina","continua","opri","adăuga","elimina","reduce","crește",
+  "sistem","model","date","informații","text","limbaj","analiză","rezultat",
+  "metodă","abordare","proces","algoritm","aplicație","interfață","utilizator",
+  "platformă","rețea","conținut","postare","mesaj","comentariu","articol",
+  "studiu","cercetare","domeniu","categorie","tip","clasă","grup","set"
+]);
+
+function computeVocabStats(text) {
+  const words = text.toLowerCase().match(/[a-zăâîșț]+/g) || [];
+  if (words.length === 0) return null;
+
+  const unique = new Set(words);
+  const ttr = unique.size / words.length;
+
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 10);
+  const avgSentLen = sentences.length > 0
+    ? sentences.reduce((acc, s) => acc + s.trim().split(/\s+/).length, 0) / sentences.length
+    : words.length;
+
+  const commonCount = words.filter(w => COMMON_1000.has(w)).length;
+  const commonPct = Math.round(commonCount / words.length * 100);
+
+  const longWords = words.filter(w => w.length > 8).length;
+  const longPct = Math.round(longWords / words.length * 100);
+
+  return {
+    wordCount: words.length,
+    uniqueCount: unique.size,
+    ttr: Math.round(ttr * 100),
+    avgSentLen: Math.round(avgSentLen * 10) / 10,
+    commonPct,
+    longPct,
+    sentences: sentences.length
+  };
+}
+
+function renderVocabStats(text) {
+  const wrapper = document.getElementById('vocabWrapper');
+  if (!opts.vocab) { wrapper.style.display = 'none'; return; }
+
+  const stats = computeVocabStats(text);
+  if (!stats) { wrapper.style.display = 'none'; return; }
+
+  const grid = document.getElementById('vocabGrid');
+  grid.innerHTML = `
+    <div class="vocab-card">
+      <div class="vocab-val" style="color:var(--accent)">${stats.wordCount}</div>
+      <div class="vocab-lbl">Cuvinte totale</div>
+    </div>
+    <div class="vocab-card">
+      <div class="vocab-val" style="color:var(--green)">${stats.ttr}%</div>
+      <div class="vocab-lbl">Diversitate vocabular (TTR)</div>
+    </div>
+    <div class="vocab-card">
+      <div class="vocab-val" style="color:var(--human)">${stats.avgSentLen}</div>
+      <div class="vocab-lbl">Lungime medie propoziție</div>
+    </div>`;
+
+  document.getElementById('vocabBarPct').textContent = stats.commonPct + '%';
+  document.getElementById('vocabBar').style.width = stats.commonPct + '%';
+
+  const risk = document.getElementById('vocabRisk');
+  let riskClass, riskText;
+
+  const aiScore = (stats.commonPct > 70 ? 1 : 0) +
+                  (stats.ttr < 45 ? 1 : 0) +
+                  (stats.avgSentLen > 20 ? 1 : 0);
+
+  if (aiScore >= 2) {
+    riskClass = 'high';
+    riskText = '⚠ Profil statistic consistent cu text AI: vocabular comun ridicat, diversitate scăzută și/sau propoziții lungi uniforme.';
+  } else if (aiScore === 1) {
+    riskClass = 'med';
+    riskText = '~ Profil statistic ambiguu: unele caracteristici statistice se suprapun cu textul AI, dar nu sunt concludente.';
+  } else {
+    riskClass = 'low';
+    riskText = '✓ Profil statistic consistent cu text uman: diversitate vocabular ridicată și/sau variabilitate în lungimea propozițiilor.';
+  }
+
+  risk.className = `vocab-risk ${riskClass}`;
+  risk.textContent = riskText;
+  risk.style.display = 'block';
+
+  wrapper.style.display = 'block';
+}
+
+
+function showErr(msg) {
+  const e = document.getElementById('errBox');
+  e.textContent = 'Eroare: ' + msg;
+  e.style.display = 'block';
+}
+</script>
+</body>
+</html>
