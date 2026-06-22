@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Detector Texte AI</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -16,18 +16,13 @@
 html{scroll-behavior:smooth}
 body{
   background:var(--bg);color:var(--text);
-  font-family:'DM Mono',monospace;min-height:100vh;
+  font-family:ui-monospace,Menlo,Consolas,monospace;min-height:100vh;
   display:flex;flex-direction:column;align-items:center;
   padding:32px 40px 80px;
 }
-body::before{
-  content:'';position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-  pointer-events:none;z-index:0;
-}
-.wrap{position:relative;z-index:1;width:100%;max-width:1200px}
+.wrap{position:relative;width:100%;max-width:1200px}
 header{margin-bottom:44px;text-align:center}
-h1{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,6vw,3.4rem);font-weight:800;line-height:1.05;letter-spacing:-.03em}
+h1{font-family:'Inter',sans-serif;font-size:clamp(2.2rem,6vw,3.4rem);font-weight:800;line-height:1.05;letter-spacing:-.03em}
 h1 em{color:var(--accent);font-style:normal}
 .subtitle{margin-top:10px;font-size:12px;color:var(--muted);letter-spacing:.08em}
 
@@ -35,7 +30,7 @@ h1 em{color:var(--accent);font-style:normal}
 .tab{
   flex:1;padding:11px;background:var(--surface);border:1px solid var(--border);
   border-radius:8px;text-align:center;cursor:pointer;
-  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:700;
   letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
   transition:all .2s;
 }
@@ -47,7 +42,7 @@ h1 em{color:var(--accent);font-style:normal}
 .card-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
 textarea{
   width:100%;min-height:150px;background:var(--bg);border:1px solid var(--border);
-  border-radius:6px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;
+  border-radius:6px;color:var(--text);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;
   line-height:1.75;padding:14px 16px;resize:vertical;outline:none;transition:border-color .2s;
 }
 textarea:focus{border-color:var(--accent)}
@@ -66,7 +61,7 @@ textarea:focus{border-color:var(--accent)}
 .btn-primary{
   width:100%;margin-top:18px;padding:15px;background:transparent;
   border:1px solid var(--accent);border-radius:6px;color:var(--accent);
-  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:700;
   letter-spacing:.18em;text-transform:uppercase;cursor:pointer;
   transition:background .2s,color .15s,transform .1s;
 }
@@ -90,7 +85,7 @@ textarea:focus{border-color:var(--accent)}
 .v-icon{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .v-icon.ai  {background:rgba(255,77,109,.12);border:1px solid var(--ai)}
 .v-icon.hum {background:rgba(0,229,255,.10); border:1px solid var(--human)}
-.v-label{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em}
+.v-label{font-family:'Inter',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em}
 .v-label.ai {color:var(--ai)}
 .v-label.hum{color:var(--human)}
 .v-sub{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.04em}
@@ -117,7 +112,7 @@ textarea:focus{border-color:var(--accent)}
 .sent-item.weak_human {border-left-color:rgba(0,229,255,.4);background:rgba(0,229,255,.02)}
 .sent-item.neutral    {border-left-color:var(--muted)}
 .sent-badge{
-  font-family:'Syne',sans-serif;font-size:9px;font-weight:700;
+  font-family:'Inter',sans-serif;font-size:9px;font-weight:700;
   padding:3px 7px;border-radius:3px;white-space:nowrap;flex-shrink:0;margin-top:2px;
 }
 .sent-badge.strong_ai  {background:rgba(255,77,109,.2);color:var(--ai)}
@@ -136,7 +131,7 @@ textarea:focus{border-color:var(--accent)}
 .bar-fill.ai {background:var(--ai)}
 .bar-fill.hum{background:var(--human)}
 .conf{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);margin-top:22px}
-.conf-val{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:var(--text)}
+.conf-val{font-family:'Inter',sans-serif;font-weight:700;font-size:17px;color:var(--text)}
 
 #chartWrap{margin-top:26px;display:none}
 #chartWrap canvas{max-height:200px}
@@ -157,9 +152,9 @@ textarea:focus{border-color:var(--accent)}
 .cmp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .cmp-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center;cursor:pointer;transition:all .2s}
 .cmp-card:hover{border-color:var(--accent);background:var(--surface2)}
-.cmp-card.active-view{border-color:var(--green);box-shadow:0 0 10px rgba(0,255,170,.2)}
+.cmp-card.active-view{border-color:var(--green)}
 .cmp-name{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.cmp-pred{font-family:'Syne',sans-serif;font-size:15px;font-weight:700}
+.cmp-pred{font-family:'Inter',sans-serif;font-size:15px;font-weight:700}
 .cmp-pred.AI  {color:var(--ai)}
 .cmp-pred.UMAN{color:var(--human)}
 .cmp-prob{font-size:11px;color:var(--muted);margin-top:4px}
@@ -170,7 +165,7 @@ textarea:focus{border-color:var(--accent)}
 .hist-list{display:flex;flex-direction:column;gap:8px}
 .hist-item{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px 16px;cursor:pointer;transition:transform .2s,border-color .2s}
 .hist-item:hover{border-color:var(--accent);transform:translateX(5px)}
-.hist-badge{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;padding:3px 9px;border-radius:3px}
+.hist-badge{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;padding:3px 9px;border-radius:3px}
 .hist-badge.AI  {background:rgba(255,77,109,.15);color:var(--ai)}
 .hist-badge.UMAN{background:rgba(0,229,255,.10);color:var(--human)}
 .hist-text{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
@@ -194,7 +189,7 @@ textarea:focus{border-color:var(--accent)}
 #batchResult{display:none;animation:fadeUp .4s ease both}
 .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
 .sum-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center}
-.sum-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px}
+.sum-val{font-family:'Inter',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px}
 .sum-val.ai  {color:var(--ai)}
 .sum-val.hum {color:var(--human)}
 .sum-val.neu {color:var(--accent)}
@@ -207,14 +202,14 @@ textarea:focus{border-color:var(--accent)}
 .batch-table th{text-align:left;padding:8px 10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--border)}
 .batch-table td{padding:8px 10px;border-bottom:1px solid rgba(34,38,47,.5);vertical-align:top}
 .batch-table tr:hover td{background:var(--surface2)}
-.b-badge{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px}
+.b-badge{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px}
 .b-badge.AI  {background:rgba(255,77,109,.15);color:var(--ai)}
 .b-badge.UMAN{background:rgba(0,229,255,.10);color:var(--human)}
 .b-badge.SKIP{background:rgba(90,95,112,.15);color:var(--muted)}
 .export-btn{
   margin-top:16px;padding:10px 20px;background:transparent;
   border:1px solid var(--green);border-radius:6px;color:var(--green);
-  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:700;
   letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;
 }
 .export-btn:hover{background:var(--green);color:var(--bg)}
@@ -240,7 +235,7 @@ textarea:focus{border-color:var(--accent)}
 .vocab-wrap{margin:20px 0}
 .vocab-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:10px}
 .vocab-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
-.vocab-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px}
+.vocab-val{font-family:'Inter',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px}
 .vocab-lbl{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;line-height:1.4}
 .vocab-bar-wrap{margin-top:12px}
 .vocab-bar-label{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:4px}
@@ -262,11 +257,11 @@ textarea:focus{border-color:var(--accent)}
 .risk-gauge-val{
   position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;
-  font-family:'Syne',sans-serif;font-weight:800;font-size:18px;
+  font-family:'Inter',sans-serif;font-weight:800;font-size:18px;
 }
 .risk-gauge-lbl{font-size:8px;color:var(--muted);letter-spacing:.1em;margin-top:-2px}
 .risk-info{flex:1}
-.risk-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px}
+.risk-title{font-family:'Inter',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px}
 .risk-title.low {color:var(--green)}
 .risk-title.med {color:#ffe500}
 .risk-title.high{color:var(--ai)}
@@ -435,7 +430,7 @@ textarea:focus{border-color:var(--accent)}
            ondragleave="this.classList.remove('dragover')"
            ondrop="handleDrop(event)">
         <input type="file" id="csvFile" accept=".csv" onchange="handleFileSelect(this.files[0])"/>
-        <div class="drop-icon">📄</div>
+        <div class="drop-icon">CSV</div>
         <div class="drop-text">
           <strong>Trage fișierul CSV aici</strong> sau click pentru a selecta<br>
           Coloana cu textul trebuie să se numească <strong>text</strong>, <strong>content</strong> sau <strong>post</strong>
@@ -485,7 +480,7 @@ textarea:focus{border-color:var(--accent)}
         </table>
       </div>
 
-      <button class="export-btn" onclick="exportCSV()">⬇ Exportă rezultate CSV</button>
+      <button class="export-btn" onclick="exportCSV()">Exportă rezultate CSV</button>
     </div>
   </div>
 </div>
@@ -666,7 +661,7 @@ function switchView(modelId) {
   const isAI = probAi >= 50;
   document.getElementById('vLabel').textContent  = isAI ? 'Generat de AI' : 'Scris de Om';
   document.getElementById('vLabel').className    = `v-label ${isAI ? 'ai' : 'hum'}`;
-  document.getElementById('vIcon').textContent   = isAI ? '🤖' : '👤';
+  document.getElementById('vIcon').textContent   = isAI ? 'AI' : 'OM';
   document.getElementById('vIcon').className     = `v-icon ${isAI ? 'ai' : 'hum'}`;
   document.getElementById('vSub').textContent    = `Vizualizare logică bazată pe modelul ${titlePrefix}.`;
   document.getElementById('analysisLabel').textContent = `Rezultat analiză (${titlePrefix})`;
