@@ -9,24 +9,24 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0b0c0f;--surface:#13151a;--surface2:#1a1d24;
-  --border:#22262f;--accent:#00e5ff;--ai:#ff4d6d;
-  --human:#00e5ff;--text:#e8eaf0;--muted:#5a5f70;--green:#00ffaa;
+  --bg:#f6f3ee;--surface:#ffffff;--surface2:#efe9e1;
+  --border:#e0d8cc;--accent:#5b8a6f;--ai:#c2603f;
+  --human:#5b8a6f;--text:#2c2a26;--muted:#8a8378;--green:#5b8a6f;
 }
 html{scroll-behavior:smooth}
 body{
   background:var(--bg);color:var(--text);
   font-family:ui-monospace,Menlo,Consolas,monospace;min-height:100vh;
   display:flex;flex-direction:column;align-items:center;
-  padding:32px 40px 80px;
+  padding:18px 40px 28px;
 }
 .wrap{position:relative;width:100%;max-width:1200px}
-header{margin-bottom:44px;text-align:center}
-h1{font-family:'Inter',sans-serif;font-size:clamp(2.2rem,6vw,3.4rem);font-weight:800;line-height:1.05;letter-spacing:-.03em}
+header{margin-bottom:18px;text-align:center}
+h1{font-family:'Inter',sans-serif;font-size:clamp(1.6rem,4vw,2.3rem);font-weight:800;line-height:1.05;letter-spacing:-.03em}
 h1 em{color:var(--accent);font-style:normal}
 .subtitle{margin-top:10px;font-size:12px;color:var(--muted);letter-spacing:.08em}
 
-.tabs{display:flex;gap:8px;margin-bottom:20px}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
 .tab{
   flex:1;padding:11px;background:var(--surface);border:1px solid var(--border);
   border-radius:8px;text-align:center;cursor:pointer;
@@ -34,21 +34,21 @@ h1 em{color:var(--accent);font-style:normal}
   letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
   transition:all .2s;
 }
-.tab.active{border-color:var(--accent);color:var(--accent);background:rgba(0,229,255,.05)}
+.tab.active{border-color:var(--accent);color:var(--accent);background:rgba(91,138,111,.05)}
 .tab-pane{display:none}
 .tab-pane.active{display:block}
 
-.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 32px;margin-bottom:20px}
-.card-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-bottom:12px}
+.card-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 textarea{
-  width:100%;min-height:150px;background:var(--bg);border:1px solid var(--border);
+  width:100%;min-height:104px;background:var(--bg);border:1px solid var(--border);
   border-radius:6px;color:var(--text);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;
   line-height:1.75;padding:14px 16px;resize:vertical;outline:none;transition:border-color .2s;
 }
 textarea:focus{border-color:var(--accent)}
 .char-count{text-align:right;font-size:11px;color:var(--muted);margin-top:6px}
 
-.toggles{display:grid;grid-template-columns:repeat(3,auto);gap:10px;margin-top:18px;justify-content:start;flex-wrap:wrap}
+.toggles{display:grid;grid-template-columns:repeat(3,auto);gap:8px;margin-top:12px;justify-content:start;flex-wrap:wrap}
 .toggle{
   display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);
   border-radius:6px;padding:8px 14px;cursor:pointer;user-select:none;
@@ -59,7 +59,7 @@ textarea:focus{border-color:var(--accent)}
 .toggle.active .toggle-dot{background:var(--accent)}
 
 .btn-primary{
-  width:100%;margin-top:18px;padding:15px;background:transparent;
+  width:100%;margin-top:12px;padding:12px;background:transparent;
   border:1px solid var(--accent);border-radius:6px;color:var(--accent);
   font-family:'Inter',sans-serif;font-size:13px;font-weight:700;
   letter-spacing:.18em;text-transform:uppercase;cursor:pointer;
@@ -69,7 +69,7 @@ textarea:focus{border-color:var(--accent)}
 .btn-primary:disabled{opacity:.35;cursor:not-allowed}
 
 .err{
-  background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.25);
+  background:rgba(194,96,63,.08);border:1px solid rgba(194,96,63,.25);
   border-radius:6px;padding:12px 16px;font-size:12px;color:var(--ai);
   display:none;margin-top:14px;
 }
@@ -81,21 +81,21 @@ textarea:focus{border-color:var(--accent)}
 @media(max-width:900px){#result-inner{grid-template-columns:1fr}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 
-.verdict{display:flex;align-items:center;gap:16px;margin-bottom:26px}
+.verdict{display:flex;align-items:center;gap:16px;margin-bottom:16px}
 .v-icon{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.v-icon.ai  {background:rgba(255,77,109,.12);border:1px solid var(--ai)}
-.v-icon.hum {background:rgba(0,229,255,.10); border:1px solid var(--human)}
+.v-icon.ai  {background:rgba(194,96,63,.12);border:1px solid var(--ai)}
+.v-icon.hum {background:rgba(91,138,111,.10); border:1px solid var(--human)}
 .v-label{font-family:'Inter',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em}
 .v-label.ai {color:var(--ai)}
 .v-label.hum{color:var(--human)}
 .v-sub{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.04em}
 
-.highlight-area{line-height:2;font-size:14px;background:var(--bg);padding:18px;border-radius:8px;border:1px solid var(--border);margin:20px 0;color:var(--text)}
-.hl-ai {background:rgba(255,77,109,.25);border-bottom:2px solid var(--ai);color:#ff8fa3;padding:2px 4px}
-.hl-hum{background:rgba(0,229,255,.15);border-bottom:2px solid var(--human);color:#80f1ff;padding:2px 4px}
+.highlight-area{line-height:2;font-size:14px;background:var(--bg);padding:14px;border-radius:8px;border:1px solid var(--border);margin:12px 0;color:var(--text)}
+.hl-ai {background:rgba(194,96,63,.25);border-bottom:2px solid var(--ai);color:#9c4326;padding:2px 4px}
+.hl-hum{background:rgba(91,138,111,.15);border-bottom:2px solid var(--human);color:#2f5f48;padding:2px 4px}
 
 /* ANALIZA PER PROPOZIȚIE */
-.sent-area{margin:20px 0}
+.sent-area{margin:12px 0}
 .sent-legend{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;font-size:10px;color:var(--muted);letter-spacing:.08em}
 .sent-legend span{display:flex;align-items:center;gap:6px}
 .sent-legend .dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
@@ -106,19 +106,19 @@ textarea:focus{border-color:var(--accent)}
   background:var(--bg);transition:transform .15s;
 }
 .sent-item:hover{transform:translateX(3px)}
-.sent-item.strong_ai  {border-left-color:var(--ai);background:rgba(255,77,109,.06)}
-.sent-item.weak_ai    {border-left-color:rgba(255,77,109,.5);background:rgba(255,77,109,.03)}
-.sent-item.strong_human{border-left-color:var(--human);background:rgba(0,229,255,.06)}
-.sent-item.weak_human {border-left-color:rgba(0,229,255,.4);background:rgba(0,229,255,.02)}
+.sent-item.strong_ai  {border-left-color:var(--ai);background:rgba(194,96,63,.06)}
+.sent-item.weak_ai    {border-left-color:rgba(194,96,63,.5);background:rgba(194,96,63,.03)}
+.sent-item.strong_human{border-left-color:var(--human);background:rgba(91,138,111,.06)}
+.sent-item.weak_human {border-left-color:rgba(91,138,111,.4);background:rgba(91,138,111,.02)}
 .sent-item.neutral    {border-left-color:var(--muted)}
 .sent-badge{
   font-family:'Inter',sans-serif;font-size:9px;font-weight:700;
   padding:3px 7px;border-radius:3px;white-space:nowrap;flex-shrink:0;margin-top:2px;
 }
-.sent-badge.strong_ai  {background:rgba(255,77,109,.2);color:var(--ai)}
-.sent-badge.weak_ai    {background:rgba(255,77,109,.1);color:rgba(255,77,109,.8)}
-.sent-badge.strong_human{background:rgba(0,229,255,.15);color:var(--human)}
-.sent-badge.weak_human {background:rgba(0,229,255,.08);color:rgba(0,229,255,.7)}
+.sent-badge.strong_ai  {background:rgba(194,96,63,.2);color:var(--ai)}
+.sent-badge.weak_ai    {background:rgba(194,96,63,.1);color:rgba(194,96,63,.8)}
+.sent-badge.strong_human{background:rgba(91,138,111,.15);color:var(--human)}
+.sent-badge.weak_human {background:rgba(91,138,111,.08);color:rgba(91,138,111,.7)}
 .sent-badge.neutral    {background:rgba(90,95,112,.15);color:var(--muted)}
 .sent-score{font-size:10px;color:var(--muted);white-space:nowrap;flex-shrink:0;margin-top:4px}
 .sent-text{flex:1}
@@ -130,10 +130,10 @@ textarea:focus{border-color:var(--accent)}
 .bar-fill{height:100%;border-radius:99px;width:0;transition:width .85s cubic-bezier(.22,1,.36,1)}
 .bar-fill.ai {background:var(--ai)}
 .bar-fill.hum{background:var(--human)}
-.conf{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);margin-top:22px}
+.conf{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);margin-top:14px}
 .conf-val{font-family:'Inter',sans-serif;font-weight:700;font-size:17px;color:var(--text)}
 
-#chartWrap{margin-top:26px;display:none}
+#chartWrap{margin-top:14px;display:none}
 #chartWrap canvas{max-height:200px}
 
 #limeWrap{display:none;margin-top:20px}
@@ -166,8 +166,8 @@ textarea:focus{border-color:var(--accent)}
 .hist-item{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px 16px;cursor:pointer;transition:transform .2s,border-color .2s}
 .hist-item:hover{border-color:var(--accent);transform:translateX(5px)}
 .hist-badge{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;padding:3px 9px;border-radius:3px}
-.hist-badge.AI  {background:rgba(255,77,109,.15);color:var(--ai)}
-.hist-badge.UMAN{background:rgba(0,229,255,.10);color:var(--human)}
+.hist-badge.AI  {background:rgba(194,96,63,.15);color:var(--ai)}
+.hist-badge.UMAN{background:rgba(91,138,111,.10);color:var(--human)}
 .hist-text{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
 
 .drop-zone{
@@ -175,7 +175,7 @@ textarea:focus{border-color:var(--accent)}
   text-align:center;cursor:pointer;transition:border-color .2s,background .2s;
   background:var(--bg);
 }
-.drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:rgba(0,229,255,.04)}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:rgba(91,138,111,.04)}
 .drop-zone input[type=file]{display:none}
 .drop-icon{font-size:32px;margin-bottom:12px}
 .drop-text{font-size:13px;color:var(--muted);line-height:1.7}
@@ -203,8 +203,8 @@ textarea:focus{border-color:var(--accent)}
 .batch-table td{padding:8px 10px;border-bottom:1px solid rgba(34,38,47,.5);vertical-align:top}
 .batch-table tr:hover td{background:var(--surface2)}
 .b-badge{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px}
-.b-badge.AI  {background:rgba(255,77,109,.15);color:var(--ai)}
-.b-badge.UMAN{background:rgba(0,229,255,.10);color:var(--human)}
+.b-badge.AI  {background:rgba(194,96,63,.15);color:var(--ai)}
+.b-badge.UMAN{background:rgba(91,138,111,.10);color:var(--human)}
 .b-badge.SKIP{background:rgba(90,95,112,.15);color:var(--muted)}
 .export-btn{
   margin-top:16px;padding:10px 20px;background:transparent;
@@ -218,18 +218,18 @@ textarea:focus{border-color:var(--accent)}
 .ai-phrases-wrap{margin:20px 0}
 .phrase-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .phrase-tag{
-  background:rgba(255,77,109,.12);border:1px solid rgba(255,77,109,.3);
-  border-radius:4px;padding:4px 10px;font-size:11px;color:#ff8fa3;
+  background:rgba(194,96,63,.12);border:1px solid rgba(194,96,63,.3);
+  border-radius:4px;padding:4px 10px;font-size:11px;color:#9c4326;
   display:flex;align-items:center;gap:6px;
 }
 .phrase-tag .phrase-count{
-  background:rgba(255,77,109,.3);border-radius:2px;
+  background:rgba(194,96,63,.3);border-radius:2px;
   padding:1px 5px;font-size:9px;font-weight:700;color:var(--ai);
 }
 .phrase-none{font-size:11px;color:var(--green);letter-spacing:.05em}
-.hl-phrase{background:rgba(255,77,109,.3);border-bottom:2px solid var(--ai);
-  color:#ff8fa3;padding:2px 4px;border-radius:2px;cursor:help;
-  text-decoration:underline dotted rgba(255,77,109,.6);}
+.hl-phrase{background:rgba(194,96,63,.3);border-bottom:2px solid var(--ai);
+  color:#9c4326;padding:2px 4px;border-radius:2px;cursor:help;
+  text-decoration:underline dotted rgba(194,96,63,.6);}
 
 /* STATISTICI VOCABULAR */
 .vocab-wrap{margin:20px 0}
@@ -242,9 +242,9 @@ textarea:focus{border-color:var(--accent)}
 .vocab-bar-track{height:3px;background:var(--border);border-radius:99px;overflow:hidden}
 .vocab-bar-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .8s ease}
 .vocab-risk{margin-top:12px;padding:10px 14px;border-radius:6px;font-size:11px;line-height:1.5}
-.vocab-risk.low {background:rgba(0,255,170,.06);border:1px solid rgba(0,255,170,.2);color:var(--green)}
-.vocab-risk.med {background:rgba(255,229,0,.06);border:1px solid rgba(255,229,0,.2);color:#ffe500}
-.vocab-risk.high{background:rgba(255,77,109,.06);border:1px solid rgba(255,77,109,.2);color:var(--ai)}
+.vocab-risk.low {background:rgba(91,138,111,.06);border:1px solid rgba(91,138,111,.2);color:var(--green)}
+.vocab-risk.med {background:rgba(255,229,0,.06);border:1px solid rgba(255,229,0,.2);color:#b8860b}
+.vocab-risk.high{background:rgba(194,96,63,.06);border:1px solid rgba(194,96,63,.2);color:var(--ai)}
 
 /* SCOR AGREGAT DE RISC */
 .risk-score-wrap{
@@ -263,12 +263,12 @@ textarea:focus{border-color:var(--accent)}
 .risk-info{flex:1}
 .risk-title{font-family:'Inter',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px}
 .risk-title.low {color:var(--green)}
-.risk-title.med {color:#ffe500}
+.risk-title.med {color:#b8860b}
 .risk-title.high{color:var(--ai)}
 .risk-desc{font-size:11px;color:var(--muted);line-height:1.6}
 .risk-breakdown{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
 .risk-pill{font-size:9px;padding:3px 8px;border-radius:99px;letter-spacing:.06em}
-.risk-pill.model{background:rgba(255,77,109,.15);color:var(--ai);border:1px solid rgba(255,77,109,.3)}
+.risk-pill.model{background:rgba(194,96,63,.15);color:var(--ai);border:1px solid rgba(194,96,63,.3)}
 .risk-pill.phrases{background:rgba(255,180,0,.15);color:#ffb400;border:1px solid rgba(255,180,0,.3)}
 .risk-pill.vocab{background:rgba(90,95,112,.2);color:var(--muted);border:1px solid var(--border)}
 </style>
@@ -315,7 +315,7 @@ textarea:focus{border-color:var(--accent)}
           <div class="risk-gauge">
             <svg width="80" height="80" viewBox="0 0 80 80">
               <circle cx="40" cy="40" r="34" fill="none" stroke="var(--border)" stroke-width="8"/>
-              <circle id="riskArc" cx="40" cy="40" r="34" fill="none" stroke="#00e5ff"
+              <circle id="riskArc" cx="40" cy="40" r="34" fill="none" stroke="#5b8a6f"
                 stroke-width="8" stroke-linecap="round"
                 stroke-dasharray="213.6" stroke-dashoffset="213.6"
                 style="transition:stroke-dashoffset 1s ease,stroke .5s ease"/>
@@ -333,26 +333,26 @@ textarea:focus{border-color:var(--accent)}
         </div>
       </div>
 
-<div id="sentWrapper" style="display:none; margin-bottom:25px">
+<div id="sentWrapper" style="display:none; margin-bottom:14px">
         <div class="card-label">Analiză per propoziție</div>
         <div class="sent-area">
           <div class="sent-legend">
             <span><div class="dot" style="background:var(--ai)"></div>AI puternic (&gt;75%)</span>
-            <span><div class="dot" style="background:rgba(255,77,109,.5)"></div>AI slab (55-75%)</span>
+            <span><div class="dot" style="background:rgba(194,96,63,.5)"></div>AI slab (55-75%)</span>
             <span><div class="dot" style="background:var(--muted)"></div>Incert (45-55%)</span>
-            <span><div class="dot" style="background:rgba(0,229,255,.4)"></div>Uman slab (25-45%)</span>
+            <span><div class="dot" style="background:rgba(91,138,111,.4)"></div>Uman slab (25-45%)</span>
             <span><div class="dot" style="background:var(--human)"></div>Uman puternic (&lt;25%)</span>
           </div>
           <div class="sent-list" id="sentList"></div>
         </div>
       </div>
-<div id="highlightWrapper" style="display:none; margin-bottom:25px">
+<div id="highlightWrapper" style="display:none; margin-bottom:14px">
         <div class="card-label" id="hlLabel">Evidențiere semantică</div>
         <div id="textHighlight" class="highlight-area"></div>
       </div>
-<div id="factWrapper" style="display:none; margin-top:20px; margin-bottom:25px">
+<div id="factWrapper" style="display:none; margin-top:20px; margin-bottom:14px">
         <div class="card-label">Entități detectate</div>
-        <div id="factBox" style="background:rgba(0,255,170,.05);border:1px solid rgba(0,255,170,.2);padding:15px;border-radius:8px">
+        <div id="factBox" style="background:rgba(91,138,111,.05);border:1px solid rgba(91,138,111,.2);padding:15px;border-radius:8px">
           <div id="entityList" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px"></div>
           <div id="factVerdict" style="font-size:11px;color:var(--green);letter-spacing:.05em;line-height:1.4"></div>
         </div>
@@ -361,7 +361,7 @@ textarea:focus{border-color:var(--accent)}
       <div id="result-left">
 
       <!-- FRAZE TIPICE AI -->
-      <div id="phrasesWrapper" style="display:none; margin-bottom:25px">
+      <div id="phrasesWrapper" style="display:none; margin-bottom:14px">
         <div class="card-label">Fraze tipice AI detectate</div>
         <div class="ai-phrases-wrap">
           <div class="phrase-list" id="phraseList"></div>
@@ -371,7 +371,7 @@ textarea:focus{border-color:var(--accent)}
       </div>
 
       <!-- STATISTICI VOCABULAR -->
-      <div id="vocabWrapper" style="display:none; margin-bottom:25px">
+      <div id="vocabWrapper" style="display:none; margin-bottom:14px">
         <div class="card-label">Statistici vocabular</div>
         <div class="vocab-grid" id="vocabGrid"></div>
         <div class="vocab-bar-wrap" style="margin-top:12px">
@@ -576,7 +576,7 @@ function renderResult(data, text) {
   if (nerData.entities_found && nerData.entities_found.length > 0) {
     factWrap.style.display = 'block';
     document.getElementById('entityList').innerHTML = nerData.entities_found.map(ent =>
-      `<span style="background:rgba(0,229,255,.1);border:1px solid var(--accent);padding:4px 10px;border-radius:4px;font-size:10px;color:var(--text)">
+      `<span style="background:rgba(91,138,111,.1);border:1px solid var(--accent);padding:4px 10px;border-radius:4px;font-size:10px;color:var(--text)">
         ${ent.text} <small style="opacity:.6;font-size:8px">[${ent.label}]</small>
        </span>`
     ).join('');
@@ -752,7 +752,7 @@ function renderChart(ai, hum) {
   const ctx = document.getElementById('probChart').getContext('2d');
   chartInst = new Chart(ctx, {
     type: 'doughnut',
-    data: { labels: ['AI','Om'], datasets: [{ data: [ai, hum], backgroundColor: ['#ff4d6d','#00e5ff'], borderWidth: 0 }] },
+    data: { labels: ['AI','Om'], datasets: [{ data: [ai, hum], backgroundColor: ['#c2603f','#5b8a6f'], borderWidth: 0 }] },
     options: { cutout: '75%', plugins: { legend: { display: false } }, animation: { duration: 500 } }
   });
   document.getElementById('chartWrap').style.display = 'block';
@@ -848,16 +848,16 @@ function renderBatchResult(data) {
       labels: ['AI', 'Uman'],
       datasets: [{
         data: [s.ai_count, s.human_count],
-        backgroundColor: ['rgba(255,77,109,.6)', 'rgba(0,229,255,.6)'],
-        borderColor: ['#ff4d6d', '#00e5ff'],
+        backgroundColor: ['rgba(194,96,63,.6)', 'rgba(91,138,111,.6)'],
+        borderColor: ['#c2603f', '#5b8a6f'],
         borderWidth: 1, borderRadius: 4
       }]
     },
     options: {
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color: '#5a5f70' }, grid: { color: '#22262f' } },
-        y: { ticks: { color: '#5a5f70' }, grid: { color: '#22262f' } }
+        x: { ticks: { color: '#8a8378' }, grid: { color: '#e0d8cc' } },
+        y: { ticks: { color: '#8a8378' }, grid: { color: '#e0d8cc' } }
       }
     }
   });
@@ -963,15 +963,15 @@ function computeRiskScore(data, text) {
 
   let level, title, desc, color;
   if (score >= 70) {
-    level = 'high'; color = '#ff4d6d';
+    level = 'high'; color = '#c2603f';
     title = 'Risc ridicat — probabil generat de AI';
     desc  = 'Modelul RoBERTa și indicatorii statistici sugerează cu încredere ridicată că textul a fost generat automat.';
   } else if (score >= 40) {
-    level = 'med'; color = '#ffe500';
+    level = 'med'; color = '#b8860b';
     title = 'Risc mediu — posibil conținut mixt';
     desc  = 'Unii indicatori sugerează generare AI, alții sunt consistenți cu textul uman. Verificare suplimentară recomandată.';
   } else {
-    level = 'low'; color = '#00ffaa';
+    level = 'low'; color = '#5b8a6f';
     title = 'Risc scăzut — probabil scris de om';
     desc  = 'Indicatorii statistici și modelul de clasificare sugerează că textul a fost scris de o persoană.';
   }
