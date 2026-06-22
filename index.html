@@ -40,13 +40,27 @@ h1 em{color:var(--accent);font-style:normal}
 
 /* Layout pe doua coloane: input stanga, rezultate dreapta */
 @media(min-width:1000px){
-  #pane-single.active{display:grid;grid-template-columns:360px 1fr;gap:0 16px;align-items:start}
+  #pane-single.active{display:grid;grid-template-columns:340px 1fr;gap:0 16px;align-items:start}
   #pane-single > .card{margin-bottom:12px}
   #result{grid-column:2;grid-row:1 / span 3;margin-bottom:0}
   #historySection{grid-column:1}
+
+  /* Sectiunile rezultatului se impacheteaza pe 2 coloane, nu pe verticala */
+  #result{column-count:2;column-gap:18px}
+  #result > .card-label,
+  #result > .verdict,
+  #result > #riskWrap{column-span:all}
+  #result-inner,#result-left,#result-right{display:contents}
+  #result > #sentWrapper,
+  #result > #highlightWrapper,
+  #result > #factWrapper,
+  #phrasesWrapper,#vocabWrapper,
+  .bars,.conf,#chartWrap,#limeWrap,#compareWrap{
+    break-inside:avoid;display:block;width:100%;margin-bottom:16px;
+  }
 }
-#sentList{max-height:200px;overflow:auto}
-#result .highlight-area{max-height:150px;overflow:auto}
+#sentList{max-height:180px;overflow:auto}
+#result .highlight-area{max-height:140px;overflow:auto}
 
 .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-bottom:12px}
 .card-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
