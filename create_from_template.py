@@ -213,22 +213,30 @@ def s_cuprins(prs, src):
 def s_problema(prs, src):
     sl = clone_slide(src, 1, prs)
     header(sl, "Problema și stadiul actual", 3)
-    bullets(sl, Inches(1), Inches(2.3), Inches(6.6), Inches(6),
-        [
-            "LLM-urile (ChatGPT, GPT-4, Gemini) produc texte\nindistinctibile de cele umane.",
-            "Rețelele sociale = publicare instant, fără filtrare\n→ dezinformare rapidă.",
-            "Texte scurte și informale: argou, abrevieri, greșeli\n→ metodele clasice dau greș.",
-            "Instrumentele existente sunt evaluate pe texte\nlungi și formale.",
-            "Parafrazarea scade acuratețea de la >90% la <50%.",
-        ], size=17, spacing=1.15, gap=14)
-    rect(sl, Inches(1), Inches(8.7), Inches(6.6), Inches(1.4), PANEL)
-    txb(sl, Inches(1.25), Inches(8.9), Inches(6.1), Inches(1.0),
+    # left: bulleted points in a soft card with an accent bar
+    rect(sl, Inches(1), Inches(2.3), Inches(7.4), Inches(6.0), RGBColor(0xF3, 0xF6, 0xFB))
+    rect(sl, Inches(1), Inches(2.3), Inches(0.22), Inches(6.0), BLUE)
+    pts = [
+        "LLM-urile (ChatGPT, GPT-4, Gemini) produc texte indistinctibile de cele umane.",
+        "Rețelele sociale: publicare instant, fără filtrare → dezinformare rapidă.",
+        "Texte scurte și informale (argou, abrevieri, greșeli) → metodele clasice dau greș.",
+        "Instrumentele existente sunt evaluate pe texte lungi și formale.",
+        "Parafrazarea scade acuratețea de la >90% la <50%.",
+    ]
+    for i, p in enumerate(pts):
+        y = Inches(2.7) + i * Inches(1.12)
+        rect(sl, Inches(1.6), y + Inches(0.12), Inches(0.16), Inches(0.16), BLUE)
+        txb(sl, Inches(2.0), y, Inches(6.1), Inches(1.0), p, size=17, color=DARK)
+    # callout
+    rect(sl, Inches(1), Inches(8.7), Inches(7.4), Inches(1.45), PANEL)
+    txb(sl, Inches(1.35), Inches(8.95), Inches(6.8), Inches(1.0),
         "Niciun instrument comercial nu este optimizat\npentru textele scurte de social media.",
-        size=16, bold=True, color=DBLUE)
-    # pipeline figure
-    txb(sl, Inches(8.2), Inches(2.2), Inches(11), Inches(0.5),
-        "Peisajul metodelor de detecție (pipeline studiat)", size=15, italic=True, color=LGRAY)
-    pic(sl, f"{FIGS}/fig_2_1_pipeline_0.png", Inches(8), Inches(2.8), Inches(11.2), Inches(7.2))
+        size=17, bold=True, color=DBLUE)
+    # right: pipeline figure, larger and vertically centred on a clean card
+    txb(sl, Inches(9.0), Inches(2.3), Inches(10.5), Inches(0.5),
+        "Peisajul metodelor de detecție (pipeline studiat în literatură)",
+        size=15, italic=True, color=LGRAY)
+    pic(sl, f"{FIGS}/fig_2_1_pipeline_0.png", Inches(9.0), Inches(3.1), Inches(10.5), Inches(6.4))
 
 
 def s_obiective(prs, src):
@@ -283,23 +291,31 @@ def s_tehnologii(prs, src):
 def s_arhitectura(prs, src):
     sl = clone_slide(src, 6, prs)
     header(sl, "Arhitectura sistemului", 6, "Figura 3.2 — pipeline complet: surse → preprocesare → split → antrenare → evaluare")
-    pic(sl, f"{FIGS}/fig_3_2_arhitectura_0.png", Inches(0.6), Inches(2.4), Inches(10.5), Inches(8.5))
-    # right side: dataset summary
-    x = Inches(11.6)
-    rect(sl, x, Inches(2.6), Inches(7.7), Inches(7.7), PANEL)
-    txb(sl, x+Inches(0.5), Inches(2.9), Inches(6.7), Inches(0.9), "45.834 exemple",
-        size=40, bold=True, color=BLUE, align=PP_ALIGN.CENTER)
-    txb(sl, x+Inches(0.5), Inches(3.85), Inches(6.7), Inches(0.5),
-        "echilibrate 50/50  uman / AI", size=19, color=DARK, align=PP_ALIGN.CENTER)
-    hline(sl, x+Inches(1.5), Inches(4.6), Inches(4.7), BLUE, 2)
-    bullets(sl, x+Inches(0.6), Inches(4.85), Inches(6.6), Inches(2.6),
-        ["• Filtrate 50-500 caractere",
-         "• Split stratificat 70 / 15 / 15",
-         "• 6 surse: HC3, TweetEval, Reddit, RAID,\n  AI_Human, AI Detection",
-         "• 3 modele: Naive Bayes · Reg. Logistică · RoBERTa"], size=17, gap=12)
-    txb(sl, x+Inches(0.5), Inches(9.5), Inches(6.7), Inches(0.7),
+    # left: cleaned architecture diagram on a white card
+    pic(sl, f"{FIGS}/fig_3_2_arhitectura_clean.png", Inches(0.7), Inches(2.4), Inches(9.6), Inches(8.4))
+    # right side: dataset summary panel
+    x = Inches(11.4)
+    pw = Inches(7.9)
+    rect(sl, x, Inches(2.4), pw, Inches(8.4), PANEL)
+    rect(sl, x, Inches(2.4), pw, Inches(1.5), BLUE)
+    txb(sl, x, Inches(2.6), pw, Inches(0.9), "45.834 exemple",
+        size=38, bold=True, color=WHITE, align=PP_ALIGN.CENTER)
+    txb(sl, x, Inches(4.05), pw, Inches(0.5),
+        "echilibrate 50 / 50  ·  uman / AI", size=20, bold=True, color=DBLUE, align=PP_ALIGN.CENTER)
+    rows = [
+        ("Filtrare", "texte de 50-500 caractere"),
+        ("Split stratificat", "70 % train · 15 % val · 15 % test"),
+        ("6 surse", "HC3, TweetEval, Reddit, RAID,\nAI_Human, AI Detection"),
+        ("3 modele", "Naive Bayes · Reg. Logistică · RoBERTa"),
+    ]
+    for i, (k, v) in enumerate(rows):
+        y = Inches(4.95) + i * Inches(1.18)
+        rect(sl, x+Inches(0.55), y+Inches(0.08), Inches(0.16), Inches(0.16), BLUE)
+        txb(sl, x+Inches(0.9), y, Inches(6.6), Inches(0.5), k, size=17, bold=True, color=BLUE)
+        txb(sl, x+Inches(0.9), y+Inches(0.42), Inches(6.6), Inches(0.7), v, size=15, color=DARK)
+    txb(sl, x+Inches(0.55), Inches(9.95), pw-Inches(1.1), Inches(0.7),
         "Backend Flask (/predict, /batch) + frontend single-page",
-        size=15, italic=True, color=LGRAY, align=PP_ALIGN.CENTER)
+        size=14, italic=True, color=LGRAY, align=PP_ALIGN.CENTER)
 
 
 def s_rezultate(prs, src):
