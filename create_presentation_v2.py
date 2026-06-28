@@ -167,10 +167,10 @@ def s2_tema(prs):
     card(slide, 0.55, 1.35, 4.5, 3.75, accent=PURPLE)
     txt(slide, 0.75, 1.5, 4.1, 0.35, "Problema", size=14, bold=True, color=PURPLE)
     bullets(slide, 0.75, 1.95, 4.15, 3.1, [
-        "Modelele LLM (ChatGPT, GPT-4, Gemini) generează texte aproape indistinguibile de cele scrise de oameni.",
+        "Modelele LLM (ChatGPT, GPT-4, Gemini) generează texte aproape indistinguibile de cele scrise de oameni [2].",
         "Rețelele sociale: publicare instantanee, fără filtrare editorială → dezinformarea se propagă rapid.",
         "Texte scurte și informale (abrevieri, argou, greșeli intenționate) — metodele clasice funcționează slab aici.",
-        "Impact real: site-uri de știri false AI ×10 în 2023 (49→600+); 64% se tem de manipularea alegerilor (KPMG 2025).",
+        "Impact real: site-uri de știri false AI ×10 în 2023 (49→600+) [12]; 64% se tem de manipularea alegerilor [6].",
     ], size=12)
 
     # Right: state of the art
@@ -178,14 +178,14 @@ def s2_tema(prs):
     txt(slide, 5.45, 1.5, 3.8, 0.35, "Stadiul actual al cercetării (din 2019)",
         size=14, bold=True, color=CYAN)
     bullets(slide, 5.45, 1.95, 3.85, 2.0, [
-        "Metode statistice — perplexitate, entropie (GLTR)",
-        "Watermarking — semnal ascuns la generare",
-        "Clasificatori supervizați — RoBERTa fine-tuned",
-        "Metode zero-shot — DetectGPT",
+        "Metode statistice — perplexitate, entropie (GLTR) [5]",
+        "Watermarking — semnal ascuns la generare [8]",
+        "Clasificatori supervizați — RoBERTa fine-tuned [10]",
+        "Metode zero-shot — DetectGPT [11]",
     ], size=12, bullet_color=PURPLE)
     rect(slide, 5.45, 4.05, 3.8, 0.02, fill=GREY)
     txt(slide, 5.45, 4.15, 3.85, 0.95,
-        "Limitare comună: toate sunt evaluate pe texte lungi și formale, iar parafrazarea reduce acuratețea de la >90% la <50%.",
+        "Limitare comună: toate sunt evaluate pe texte lungi și formale, iar parafrazarea reduce acuratețea de la >90% la <50% [9].",
         size=11.5, italic=True, color=ORANGE, spacing=1.05)
 
 
@@ -249,8 +249,8 @@ def s5_analiza(prs):
     footer(slide, 5)
 
     items = [
-        (PURPLE, "Instrumente existente", "5 aplicații comerciale studiate (GPTZero, ZeroGPT, OpenAI Classifier, Originality.ai, Sapling) — toate slabe pe texte scurte."),
-        (CYAN, "Metode din literatură", "4 categorii identificate (statistice, watermarking, supervizate, zero-shot) și limitările lor."),
+        (PURPLE, "Instrumente existente", "5 aplicații comerciale studiate (GPTZero [14], ZeroGPT, OpenAI Classifier, Originality.ai, Sapling) — toate slabe pe texte scurte."),
+        (CYAN, "Metode din literatură", "4 categorii identificate (statistice [5], watermarking [8], supervizate, zero-shot [11]) și limitările lor [13]."),
         (BLUE, "Specificul social media", "Lungime mică, limbaj informal, abrevieri și greșeli intenționate îngreunează clasificarea."),
         (GREEN, "Concluzii → specificații", "Set de date 50-500 caractere · comparație multi-model · justificare per cuvânt · procesare în lot."),
     ]
@@ -279,7 +279,7 @@ def s6_proiectare(prs):
     txt(slide, 0.75, 3.5, 4.1, 0.3, "Trei modele complementare", size=13, bold=True, color=CYAN)
     bullets(slide, 0.75, 3.9, 4.15, 1.15, [
         "Naive Bayes & Reg. Logistică (TF-IDF) — baseline rapid, interpretabil.",
-        "RoBERTa fine-tuned (125M parametri) — model principal contextual.",
+        "RoBERTa fine-tuned (125M parametri) [10] — model principal, bazat pe Transformer [15].",
     ], size=11.5, bullet_color=PURPLE)
 
     # Data model right
@@ -287,10 +287,10 @@ def s6_proiectare(prs):
     txt(slide, 5.45, 1.5, 3.8, 0.35, "Model de date: 6 surse combinate",
         size=13, bold=True, color=BLUE)
     rows = [
-        ("HC3 Reddit ELI5", "perechi uman/AI"),
-        ("TweetEval", "tweets reale"),
+        ("HC3 Reddit ELI5 [7]", "perechi uman/AI"),
+        ("TweetEval [1]", "tweets reale"),
         ("Reddit comentarii", "limbaj informal"),
-        ("RAID (2024)", "AI multi-model"),
+        ("RAID (2024) [4]", "AI multi-model"),
         ("AI_Human.csv", "volum/diversitate"),
         ("AI Detection", "texte AI extra"),
     ]
@@ -336,7 +336,7 @@ def s7_realizare(prs):
             color=c if best else LIGHT, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
 
     txt(slide, 0.55, 3.55, 5.4, 0.6,
-        "Testat pe 6.876 exemple (50/50). Pe sursele propriu-zise de social media: acuratețe >99.5%.",
+        "Testat pe 6.876 exemple (50/50). Pe sursele propriu-zise de social media: acuratețe >99.5% — confirmă teoria detectabilității [3].",
         size=11, italic=True, color=GREY, spacing=1.05)
 
     # Demo card right
@@ -426,17 +426,17 @@ def s10_bibliografie(prs):
         "Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., et al. (2017). Attention is All You Need. arXiv:1706.03762.",
     ]
     half = (len(refs) + 1) // 2
-    cols = [refs[:half], refs[half:]]
+    cols = [list(enumerate(refs))[:half], list(enumerate(refs))[half:]]
     for ci, col in enumerate(cols):
         x = 0.55 + ci * 4.75
         tb = slide.shapes.add_textbox(Inches(x), Inches(1.4), Inches(4.55), Inches(3.85))
         tf = tb.text_frame; tf.word_wrap = True
         tf.margin_left = 0; tf.margin_right = 0; tf.margin_top = Pt(0)
-        for i, ref in enumerate(col):
+        for i, (idx, ref) in enumerate(col):
             p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
             p.line_spacing = 0.98; p.space_after = Pt(6)
-            rb = p.add_run(); rb.text = "▸ "
-            rb.font.size = Pt(8.5); rb.font.color.rgb = CYAN; rb.font.name = FONT
+            rb = p.add_run(); rb.text = f"[{idx+1}] "
+            rb.font.size = Pt(8.5); rb.font.bold = True; rb.font.color.rgb = CYAN; rb.font.name = FONT
             rt = p.add_run(); rt.text = ref
             rt.font.size = Pt(8.5); rt.font.color.rgb = LIGHT; rt.font.name = FONT
 
