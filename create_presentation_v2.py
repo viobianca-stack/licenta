@@ -32,7 +32,7 @@ W, H = Inches(10), Inches(5.625)
 FONT = "Calibri"
 
 PRES_TITLE = "Detectarea mesajelor generate de AI pe rețelele sociale"
-TOTAL = 10
+TOTAL = 11
 
 
 def new_prs():
@@ -403,6 +403,44 @@ def s9_dezvoltari(prs):
         txt(slide, x+0.25, y+0.5, 3.95, 0.45, d, size=10.5, color=LIGHT, spacing=1.0)
 
 
+def s10_bibliografie(prs):
+    slide = add_slide(prs); set_bg(slide)
+    header(slide, "Referințe", "Bibliografie")
+    footer(slide, 10)
+
+    refs = [
+        "Barbieri, F., Camacho-Collados, J., Espinosa-Anke, L., & Neves, L. (2020). TweetEval: Unified Benchmark and Comparative Evaluation for Tweet Classification. arXiv:2010.12421.",
+        "Brown, T., Mann, B., Ryder, N., Subbiah, M., Kaplan, J., Dhariwal, P., et al. (2020). Language Models are Few-Shot Learners. arXiv:2005.14165.",
+        "Chakraborty, S., Bedi, A. S., Zhu, S., An, B., Manocha, D., & Huang, F. (2023). On the Possibilities of AI-Generated Text Detection. arXiv:2304.04736.",
+        "Dugan, L., Hwang, A., Trhlík, F., Zhu, Z., Ippolito, D., & Callison-Burch, C. (2024). RAID: A Shared Benchmark for Robust Evaluation of Machine-Generated Text Detectors. ACL 2024. arXiv:2405.07940.",
+        "Gehrmann, S., Strobelt, H., & Rush, A. M. (2019). GLTR: Statistical Detection and Visualization of Generated Text. arXiv:1906.04043.",
+        "Gillespie, N., Lockey, S., Curtis, C., Pool, J., & Akbari, A. (2025). Trust, Attitudes and Use of Artificial Intelligence: A Global Study 2025. Univ. of Melbourne & KPMG.",
+        "Guo, W., Shen, W., Lei, J., Chow, K., & Shi, E. (2023). How Close is ChatGPT to Human Experts? Comparison Corpus, Evaluation, and Detection (HC3). arXiv:2301.07597.",
+        "Kirchenbauer, J., Geiping, J., Wen, Y., Katz, J., Miers, I., & Goldstein, T. (2023). A Watermark for Large Language Models. arXiv:2301.10226.",
+        "Krishna, K., Song, Y., Karpinska, M., Wieting, J., & Iyyer, M. (2023). Paraphrasing Evades Detectors of AI-Generated Text. arXiv:2303.13408.",
+        "Liu, Y., Ott, M., Goyal, N., Du, J., Joshi, M., Chen, D., et al. (2019). RoBERTa: A Robustly Optimized BERT Pretraining Approach. arXiv:1907.11692.",
+        "Mitchell, E., Lee, Y., Khazatsky, A., Manning, C. D., & Finn, C. (2023). DetectGPT: Zero-Shot Machine-Generated Text Detection Using Probability Curvature. arXiv:2301.11305.",
+        "NewsGuard (2023). The Year AI Supercharged Misinformation: NewsGuard's 2023 in Review.",
+        "Sadasivan, V. S., Kumar, A., Balasubramanian, S., Wang, W., & Feizi, S. (2023). Can AI-Generated Text be Reliably Detected? arXiv:2303.11156.",
+        "Tian, E. (2023). GPTZero. gptzero.me.",
+        "Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., et al. (2017). Attention is All You Need. arXiv:1706.03762.",
+    ]
+    half = (len(refs) + 1) // 2
+    cols = [refs[:half], refs[half:]]
+    for ci, col in enumerate(cols):
+        x = 0.55 + ci * 4.75
+        tb = slide.shapes.add_textbox(Inches(x), Inches(1.4), Inches(4.55), Inches(3.85))
+        tf = tb.text_frame; tf.word_wrap = True
+        tf.margin_left = 0; tf.margin_right = 0; tf.margin_top = Pt(0)
+        for i, ref in enumerate(col):
+            p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+            p.line_spacing = 0.98; p.space_after = Pt(6)
+            rb = p.add_run(); rb.text = "▸ "
+            rb.font.size = Pt(8.5); rb.font.color.rgb = CYAN; rb.font.name = FONT
+            rt = p.add_run(); rt.text = ref
+            rt.font.size = Pt(8.5); rt.font.color.rgb = LIGHT; rt.font.name = FONT
+
+
 def s10_final(prs):
     slide = add_slide(prs); set_bg(slide)
     pic(slide, f"{ASSETS}/image4.png", -1.8, -1.5, w=5.0)
@@ -425,7 +463,7 @@ def build():
     prs = new_prs()
     s1_title(prs); s2_tema(prs); s3_obiective(prs); s4_tehnologii(prs)
     s5_analiza(prs); s6_proiectare(prs); s7_realizare(prs); s8_contributii(prs)
-    s9_dezvoltari(prs); s10_final(prs)
+    s9_dezvoltari(prs); s10_bibliografie(prs); s10_final(prs)
     out = "/home/user/licenta/Prezentare_Licenta_Gheorghe_Bianca.pptx"
     prs.save(out)
     print("Saved:", out, "| slides:", len(prs.slides))
