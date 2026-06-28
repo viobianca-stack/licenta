@@ -26,7 +26,7 @@ SW = Inches(20)
 SH = Inches(11.25)
 
 FONT = "Calibri"
-TOTAL = 12  # 11 content + cuprins
+TOTAL = 10  # title + 8 content + final, no bibliography, no cuprins numbering
 
 
 # ─── Slide clone helper ────────────────────────────────────────────────────────
@@ -230,7 +230,7 @@ def build_cuprins(prs, src_prs):
     items_col2 = [
         "07.  Contributii originale",
         "08.  Dezvoltari viitoare",
-        "09.  Bibliografie",
+        "",
         "",
         "",
         "",
@@ -270,18 +270,18 @@ def build_context(prs, src_prs):
     for el in to_remove:
         el.getparent().remove(el)
 
-    _slide_header(slide, "Context si stadiul actual", 3)
+    _slide_header(slide, "Context si stadiul actual", 2)
 
     # Left column: Problema
     txb(slide, Inches(1), Inches(1.9), Inches(8), Inches(0.6),
         "Problema", size=18, bold=True, color=BLUE)
 
     problema = [
-        "Modelele LLM (ChatGPT, GPT-4, Gemini) genereaza texte aproape identice cu cele scrise de oameni [2].",
+        "Modelele LLM (ChatGPT, GPT-4, Gemini) genereaza texte aproape identice cu cele scrise de oameni.",
         "Retelele sociale: publicare instantanee, fara filtrare editoriala -> dezinformarea se propage rapid.",
         "Texte scurte si informale (abrevieri, argou, greseli intentionate) fac clasificarea dificila.",
-        "Conform KPMG 2025 [6]: 65% din organizatii au intampinat riscuri din cauza AI.",
-        "NewsGuard 2023 [12]: >1.000 surse de stiri false generate de AI.",
+        "Conform KPMG 2025: 65% din organizatii au intampinat riscuri din cauza AI.",
+        "NewsGuard 2023: >1.000 surse de stiri false generate de AI.",
     ]
     txb_lines(slide, Inches(1), Inches(2.5), Inches(8.5), Inches(3.5),
         [{'text': f"• {t}", 'size': 15, 'color': DARK} for t in problema], spacing=1.4)
@@ -291,10 +291,10 @@ def build_context(prs, src_prs):
         "Stadiul actual al cercetarii (din 2019)", size=18, bold=True, color=BLUE)
 
     stadiu = [
-        ("Metode statistice", "Incertitudine, entropie — GLTR [5]", BLUE),
-        ("Watermarking", "Semnal ascuns la generare [8]", BLUE),
-        ("Clasificatori supervizati", "RoBERTa fine-tuned [10]", BLUE),
-        ("Metode zero-shot", "DetectGPT [11]", BLUE),
+        ("Metode statistice", "Incertitudine, entropie — GLTR (Gehrmann et al.)", BLUE),
+        ("Watermarking", "Semnal ascuns la generare (Kirchenbauer et al.)", BLUE),
+        ("Clasificatori supervizati", "RoBERTa fine-tuned (Liu et al.)", BLUE),
+        ("Metode zero-shot", "DetectGPT (Mitchell et al.)", BLUE),
     ]
     for i, (title_s, desc, _) in enumerate(stadiu):
         y = Inches(2.5) + i * Inches(1.6)
@@ -307,7 +307,7 @@ def build_context(prs, src_prs):
     # Limitare
     rect(slide, Inches(1), Inches(6.2), Inches(18), Inches(1.4), RGBColor(0xE8, 0xF0, 0xFB))
     txb(slide, Inches(1.3), Inches(6.4), Inches(17.4), Inches(1.0),
-        "Limitare comuna: metodele existente sunt evaluate pe texte lungi si formale; parafrazarea reduce acuratetea de la >90% la <50% [9].",
+        "Limitare comuna: metodele existente sunt evaluate pe texte lungi si formale; parafrazarea reduce acuratetea de la >90% la <50%.",
         size=15, italic=True, color=DARK)
 
     return slide
@@ -321,7 +321,7 @@ def build_obiective(prs, src_prs):
     for el in to_remove:
         el.getparent().remove(el)
 
-    _slide_header(slide, "Scopul lucrarii / Obiective", 4)
+    _slide_header(slide, "Scopul lucrarii / Obiective", 3)
 
     items = [
         ("1", "Analiza critica",
@@ -361,7 +361,7 @@ def build_tehnologii(prs, src_prs):
     for el in to_remove:
         el.getparent().remove(el)
 
-    _slide_header(slide, "Tehnologii utilizate", 5)
+    _slide_header(slide, "Tehnologii utilizate", 4)
 
     categories = [
         ("Date & Prelucrare",
@@ -369,7 +369,7 @@ def build_tehnologii(prs, src_prs):
         ("ML Clasic",
          "scikit-learn — Naive Bayes, Reg. Logistica · TF-IDF (10.000 vocab, n-grame 1-2) · NLTK stop-words"),
         ("Deep Learning / NLP",
-         "PyTorch 2.x (GPU) · Transformers — RoBERTa-base [10] [15] · SpaCy NER"),
+         "PyTorch 2.x (GPU) · Transformers — RoBERTa-base · SpaCy NER"),
         ("Aplicatie web",
          "Flask 3.x — API REST · HTML/CSS/JS · Chart.js vizualizari"),
     ]
@@ -403,13 +403,13 @@ def build_analiza(prs, src_prs):
     for el in to_remove:
         el.getparent().remove(el)
 
-    _slide_header(slide, "Analiza cerintelor", 6)
+    _slide_header(slide, "Analiza cerintelor", 5)
 
     items = [
         ("Instrumente existente",
-         "5 aplicatii comerciale studiate (GPTZero [14], ZeroGPT, OpenAI Classifier, Originality.ai, Sapling) - toate slabe pe texte scurte."),
+         "5 aplicatii comerciale studiate (GPTZero, ZeroGPT, OpenAI Classifier, Originality.ai, Sapling) - toate slabe pe texte scurte."),
         ("Metode din literatura",
-         "4 categorii identificate: statistice [5], watermarking [8], supervizate, zero-shot [11] si limitarile lor [13]."),
+         "4 categorii identificate: statistice, watermarking, supervizate, zero-shot si limitarile lor."),
         ("Specificul social media",
          "Lungime mica, limbaj informal, abrevieri si greseli intentionate ingreuneaza clasificarea."),
         ("Concluzii -> specificatii",
@@ -436,7 +436,7 @@ def build_arhitectura(prs, src_prs):
     for el in to_remove:
         el.getparent().remove(el)
 
-    _slide_header(slide, "Decizii de arhitectura si model de date", 7)
+    _slide_header(slide, "Decizii de arhitectura si model de date", 6)
 
     # Left: arhitectura
     txb(slide, Inches(1), Inches(1.9), Inches(8.5), Inches(0.6),
@@ -445,7 +445,7 @@ def build_arhitectura(prs, src_prs):
         [{'text': t, 'size': 15, 'color': DARK} for t in [
             "• Backend Flask: incarca cele 3 modele la pornire; endpoint-uri /predict si /batch.",
             "• Frontend HTML/CSS/JS: vizualizari, comutare model in browser fara re-apel server.",
-            "• Trei modele complementare: Naive Bayes & Reg. Logistica (TF-IDF) + RoBERTa fine-tuned (125M parametri) [10] bazat pe Transformer [15].",
+            "• Trei modele complementare: Naive Bayes & Reg. Logistica (TF-IDF) + RoBERTa fine-tuned (125M parametri, arhitectura Transformer).",
         ]], spacing=1.5)
 
     # Left: 6 surse
@@ -453,10 +453,10 @@ def build_arhitectura(prs, src_prs):
         "Model de date: 6 surse combinate", size=18, bold=True, color=BLUE)
 
     surse = [
-        ("HC3 Reddit ELI5 [7]", "perechi uman/AI"),
-        ("TweetEval [1]", "tweets reale"),
+        ("HC3 Reddit ELI5", "perechi uman/AI"),
+        ("TweetEval", "tweets reale"),
         ("Reddit comentarii", "limbaj informal"),
-        ("RAID 2024 [4]", "AI multi-model"),
+        ("RAID 2024", "AI multi-model"),
         ("AI_Human.csv", "volum/diversitate"),
         ("AI Detection", "texte AI extra"),
     ]
@@ -496,7 +496,7 @@ def build_rezultate(prs, src_prs):
     for el in to_remove:
         el.getparent().remove(el)
 
-    _slide_header(slide, "Rezultate obtinute", 8)
+    _slide_header(slide, "Rezultate obtinute", 7)
 
     # 3 model result cards
     models = [
@@ -520,7 +520,7 @@ def build_rezultate(prs, src_prs):
 
     # Details
     txb(slide, Inches(1), Inches(6.0), Inches(18), Inches(0.7),
-        "Testat pe 6.876 exemple (50/50 echilibrat). Pe surse propriu-zise de social media: acuratete >99.5% - confirma teoria detectabilitatii [3].",
+        "Testat pe 6.876 exemple (50/50 echilibrat). Pe surse propriu-zise de social media: acuratete >99.5%.",
         size=15, color=DARK)
 
     txb(slide, Inches(1), Inches(6.9), Inches(8.5), Inches(0.5),
@@ -552,7 +552,7 @@ def build_contributii(prs, src_prs):
     for el in to_remove:
         el.getparent().remove(el)
 
-    _slide_header(slide, "Contributii originale", 9)
+    _slide_header(slide, "Contributii originale", 8)
 
     items = [
         ("1", "Set de date dedicat",
@@ -594,7 +594,7 @@ def build_dezvoltari(prs, src_prs):
     for el in to_remove:
         el.getparent().remove(el)
 
-    _slide_header(slide, "Dezvoltari viitoare", 10)
+    _slide_header(slide, "Dezvoltari viitoare", 9)
 
     items = [
         ("Extindere multilingva", "XLM-RoBERTa sau seturi de date dedicate, inclusiv pentru limba romana."),
@@ -700,28 +700,24 @@ def build():
     print("Building slides...")
     build_title(dst_prs, src_prs)
     print("  1. Title done")
-    build_cuprins(dst_prs, src_prs)
-    print("  2. Cuprins done")
     build_context(dst_prs, src_prs)
-    print("  3. Context done")
+    print("  2. Context done")
     build_obiective(dst_prs, src_prs)
-    print("  4. Obiective done")
+    print("  3. Obiective done")
     build_tehnologii(dst_prs, src_prs)
-    print("  5. Tehnologii done")
+    print("  4. Tehnologii done")
     build_analiza(dst_prs, src_prs)
-    print("  6. Analiza done")
+    print("  5. Analiza done")
     build_arhitectura(dst_prs, src_prs)
-    print("  7. Arhitectura done")
+    print("  6. Arhitectura done")
     build_rezultate(dst_prs, src_prs)
-    print("  8. Rezultate done")
+    print("  7. Rezultate done")
     build_contributii(dst_prs, src_prs)
-    print("  9. Contributii done")
+    print("  8. Contributii done")
     build_dezvoltari(dst_prs, src_prs)
-    print("  10. Dezvoltari done")
-    build_bibliografie(dst_prs, src_prs)
-    print("  11. Bibliografie done")
+    print("  9. Dezvoltari done")
     build_final(dst_prs, src_prs)
-    print("  12. Final done")
+    print("  10. Final done")
 
     dst_prs.save(OUTPUT_PATH)
     print(f"\nSaved: {OUTPUT_PATH}")
